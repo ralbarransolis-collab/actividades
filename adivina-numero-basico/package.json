@@ -1,0 +1,13 @@
+{
+  "name": "adivina-numero-basico",
+  "version": "1.0.0",
+  "description": "Juego básico Adivina el Número con Express, EJS y JSON",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0"
+  }
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <%- include("partials/header") %>
+</head>
+
+<body>
+    <%- include("partials/navbar") %>
+
+    <header class="text-light text-center py-4">
+        <h1 class="sombra-titulo">
+            Adivina el Número
+        </h1>
+
+        <p class="mb-0">
+            Intenta descubrir el número secreto
+        </p>
+    </header>
+
+    <main class="container my-5">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-7 col-lg-5">
+
+                <div class="card shadow">
+
+                    <div class="card-body p-4">
+
+                        <h2 class="text-center mb-4">
+                            Partida de <%= partida.nombre %>
+                        </h2>
+
+                        <div class="mb-3">
+
+                            <p>
+                                <strong>Jugador:</strong>
+                                <%= partida.nombre %>
+                            </p>
+
+                            <p>
+                                <strong>Intentos utilizados:</strong>
+                                <%= partida.intentosUtilizados %>
+                            </p>
+
+                            <p>
+                                <strong>Intentos restantes:</strong>
+                                <%= partida.intentosMaximos - partida.intentosUtilizados %>
+                            </p>
+
+                        </div>
+
+                        <% if (partida.mensaje !== "") { %>
+
+                            <div class="alert alert-info" role="alert">
+                                <%= partida.mensaje %>
+                            </div>
+
+                        <% } %>
+
+                        <% if (!partida.terminada) { %>
+
+                            <form action="/intentar" method="POST">
+
+                                <div class="mb-3">
+
+                                    <label for="numero" class="form-label">Ingrese un número entre 1 y 10</label>
+
+                                    <input type="number" id="numero" name="numero" class="form-control" min="1" max="10" step="1" placeholder="Ingrese un número" required>
+
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">Probar número</button>
+
+                            </form>
+
+                        <% } else { %>
+
+                            <hr>
+
+                            <h2 class="text-center mb-3">Partida terminada</h2>
+
+                            <% if (partida.gano) { %>
+
+                                <div class="alert alert-success" role="alert">
+                                    Ganaste la partida.
+                                </div>
+
+                            <% } else { %>
+
+                                <div class="alert alert-danger" role="alert">
+                                    Perdiste la partida.
+                                </div>
+
+                            <% } %>
+
+                            <p>
+                                <strong>El número secreto era:</strong>
+                                <%= partida.numeroSecreto %>
+                            </p>
+
+                            <p>
+                                <strong>Puntaje obtenido:</strong>
+                                <%= partida.puntaje %>
+                            </p>
+
+                            <div class="d-grid gap-2 mt-4">
+
+                                <a
+                                    href="/"
+                                    class="btn btn-primary"
+                                >
+                                    Iniciar una nueva partida
+                                </a>
+
+                                <a
+                                    href="/historial"
+                                    class="btn btn-outline-dark"
+                                >
+                                    Consultar historial
+                                </a>
+
+                            </div>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+<%- include("partials/footer") %>
+</body>
+
+</html>

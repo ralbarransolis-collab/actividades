@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <%- include("partials/header") %>
+</head>
+
+<body>
+    <%- include("partials/navbar") %>
+
+    <header class="text-light text-center py-4">
+        <h1 class="sombra-titulo">
+            Historial de partidas
+        </h1>
+
+        <p class="mb-0">
+            Resultados registrados del juego
+        </p>
+    </header>
+
+    <main class="container my-5">
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h5>Total de partidas</h5>
+                        <p class="fs-3 mb-0">
+                            <%= totalPartidas %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h5>Partidas ganadas</h5>
+                        <p class="fs-3 mb-0">
+                            <%= partidasGanadas %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h5>Partidas perdidas</h5>
+                        <p class="fs-3 mb-0">
+                            <%= partidasPerdidas %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <h5>Puntaje total</h5>
+                        <p class="fs-3 mb-0">
+                            <%= puntajeTotal %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card shadow">
+
+            <div class="card-body">
+
+                <h2 class="text-center mb-4">
+                    Partidas registradas
+                </h2>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-striped table-hover text-center">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Puntaje</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% if (partidas.length === 0) { %>
+
+                                <tr>
+                                    <td colspan="3">
+                                        Todavía no hay partidas registradas.
+                                    </td>
+                                </tr>
+
+                            <% } %>
+
+                            <% partidas.forEach((partida) => { %>
+
+                                <tr>
+                                    <td>
+                                        <%= partida.nombre %>
+                                    </td>
+
+                                    <td>
+                                        <%= partida.puntaje %>
+                                    </td>
+
+                                    <td>
+                                        <%= partida.fecha %>
+                                    </td>
+                                </tr>
+
+                            <% }); %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="text-center mt-4">
+
+                    <a
+                        href="/"
+                        class="btn btn-primary"
+                    >
+                        Volver al inicio
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+<%- include("partials/footer") %>
+</body>
+
+</html>
