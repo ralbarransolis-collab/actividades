@@ -30,6 +30,14 @@ function guardarPartida(partida) {
     );
 }
 
+function escribirPartidas(partidas) {
+    fs.writeFileSync(
+        rutaPartidas,
+        JSON.stringify(partidas, null, 2),
+        "utf-8"
+    );
+}
+
 function obtenerFechaActual() {
     const fecha = new Date();
     const dia = String(fecha.getDate()).padStart(2, "0");
@@ -159,6 +167,127 @@ app.get("/historial", (req, res) => {
         partidasGanadas: partidasGanadas,
         partidasPerdidas: partidasPerdidas,
         puntajeTotal: puntajeTotal
+    });
+});
+
+app.get("/historialPersonal", (req, res) => {
+    res.render("historialPersonal", {
+        nombreBuscado: "",
+        partidasJugador: [],
+        totalPartidas: 0,
+        puntajeAcumulado: 0,
+        puntajePromedio: 0,
+        busquedaRealizada: false,
+        mensaje: ""
+    });
+});
+
+app.post("/historialPersonal", (req, res) => {
+    const nombreBuscado = req.body.nombre.trim();
+
+    if (nombreBuscado === "") {
+        return res.render("historialPersonal", {
+            nombreBuscado: "",
+            partidasJugador: [],
+            totalPartidas: 0,
+            puntajeAcumulado: 0,
+            puntajePromedio: 0,
+            busquedaRealizada: false,
+            mensaje: "Debe ingresar el nombre de un jugador."
+        });
+    }
+
+    const partidas = leerPartidas();
+
+    const partidasJugador = partidas.filter((partida) => {
+        return partida.nombre.toLowerCase() === nombreBuscado.toLowerCase();
+    });
+
+    const totalPartidas = partidasJugador.length;
+
+    const puntajeAcumulado = partidasJugador.reduce(
+        (acumulador, partida) => acumulador + partida.puntaje,
+        0
+    );
+
+    let puntajePromedio = 0;
+
+    if (totalPartidas > 0) {
+        puntajePromedio = puntajeAcumulado / totalPartidas;
+    }
+
+    res.render("historialPersonal", {
+        nombreBuscado: nombreBuscado,
+        partidasJugador: partidasJugador,
+        totalPartidas: totalPartidas,
+        puntajeAcumulado: puntajeAcumulado,
+        puntajePromedio: puntajePromedio,
+        busquedaRealizada: true,
+        mensaje: ""
+    });
+});
+
+app.post("/eliminar-historial-jugador", (req, res) => {
+    const nombreBuscado = req.body.nombre.trim();
+    const partidas = leerPartidas();
+
+    const partidasRestantes = partidas.filter((partida) => {
+        return partida.nombre.toLowerCase() !== nombreBuscado.toLowerCase();
+    });
+
+    escribirPartidas(partidasRestantes);
+
+    res.render("historialPersonal", {
+        nombreBuscado: nombreBuscado,
+        partidasJugador: [],
+        totalPartidas: 0,
+        puntajeAcumulado: 0,
+        puntajePromedio: 0,
+        busquedaRealizada: false,
+        mensaje: `Se eliminó el historial de ${nombreBuscado}.`
+    });
+});
+
+app.get("/ranking", (req, res) => {
+    const partidas = leerPartidas();
+
+    const jugadores = {};
+
+    partidas.forEach((partida) => {
+        const nombreNormalizado = partida.nombre.toLowerCase();
+
+        if (jugadores[nombreNormalizado] === undefined) {
+            jugadores[nombreNormalizado] = {
+                nombre: partida.nombre,
+                puntajeAcumulado: 0
+            };
+        }
+
+        jugadores[nombreNormalizado].puntajeAcumulado += partida.puntaje;
+    });
+
+    const ranking = Object.values(jugadores);
+
+    ranking.sort((jugadorA, jugadorB) => {
+        return jugadorB.puntajeAcumulado - jugadorA.puntajeAcumulado;
+    });
+
+    res.render("ranking", {
+        ranking: ranking
+    });
+});
+
+app.get("/configuracion", (req, res) => {
+    res.render("configuracion", {
+        mensaje: ""
+    });
+});
+
+app.post("/reiniciar-historial", (req, res) => {
+    escribirPartidas([]);
+
+    res.render("configuracion", {
+        mensaje: "El historial fue eliminado correctamente."
     });
 });
 

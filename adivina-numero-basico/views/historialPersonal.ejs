@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <%- include("partials/header") %>
+</head>
+
+<body>
+     <%- include("partials/navbar") %>
+    <header class="text-light text-center py-4">
+        <h1 class="sombra-titulo">
+            Historial personal
+        </h1>
+    </header>
+
+    <main class="container my-5">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+
+                <div class="card shadow mb-4">
+
+                    <div class="card-body">
+
+                        <h2 class="mb-4">
+                            Buscar jugador
+                        </h2>
+
+                        <form action="/historialPersonal" method="POST">
+
+                            <div class="mb-3">
+
+                                <label for="nombre" class="form-label">
+                                    Nombre del jugador
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="nombre"
+                                    name="nombre"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Buscar
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <% if (mensaje !== "") { %>
+
+                    <div class="alert alert-success">
+                        <%= mensaje %>
+                    </div>
+
+                <% } %>
+
+                <% if (busquedaRealizada) { %>
+
+                    <div class="card shadow">
+
+                        <div class="card-body">
+
+                            <h2>
+                                Partidas de <%= nombreBuscado %>
+                            </h2>
+
+                            <div class="table-responsive mt-4">
+
+                                <table class="table table-bordered text-center">
+
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Puntaje</th>
+                                            <th>Fecha</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <% if (partidasJugador.length === 0) { %>
+
+                                            <tr>
+                                                <td colspan="3">No se encontraron partidas.</td>
+                                            </tr>
+
+                                        <% } %>
+
+                                        <% partidasJugador.forEach((partida) => { %>
+
+                                            <tr>
+                                                <td><%= partida.nombre %></td>
+                                                <td><%= partida.puntaje %></td>
+                                                <td><%= partida.fecha %></td>
+                                            </tr>
+
+                                        <% }); %>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                            <p>
+                                <strong>Total de partidas:</strong>
+                                <%= totalPartidas %>
+                            </p>
+
+                            <p>
+                                <strong>Puntaje acumulado:</strong>
+                                <%= puntajeAcumulado %>
+                            </p>
+
+                            <p>
+                                <strong>Puntaje promedio:</strong>
+                                <%= puntajePromedio.toFixed(2) %>
+                            </p>
+
+                            <% if (partidasJugador.length > 0) { %>
+
+                                <form action="/eliminar-historial-jugador" method="POST">
+
+                                    <input type="hidden" name="nombre"value="<%= nombreBuscado %>">
+
+                                    <button type="submit" class="btn btn-danger">Eliminar historial del jugador</button>
+
+                                </form>
+
+                            <% } %>
+
+                        </div>
+
+                    </div>
+
+                <% } %>
+
+                <div class="mt-4">
+
+                    <a href="/" class="btn btn-outline-dark">Volver al inicio</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

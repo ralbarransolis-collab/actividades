@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <%- include("partials/header") %>
+</head>
+
+<body>
+<%- include("partials/navbar") %>
+    <header class="text-light text-center py-4">
+
+        <h1 class="sombra-titulo">
+            Ranking de jugadores
+        </h1>
+
+    </header>
+
+    <main class="container my-5">
+
+        <div class="card shadow">
+
+            <div class="card-body">
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-striped text-center">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Posición</th>
+                                <th>Jugador</th>
+                                <th>Puntaje acumulado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% if (ranking.length === 0) { %>
+
+                                <tr>
+                                    <td colspan="3">
+                                        No hay jugadores registrados.
+                                    </td>
+                                </tr>
+
+                            <% } %>
+
+                            <% ranking.forEach((jugador, indice) => { %>
+
+                                <tr>
+                                    <td><%= indice + 1 %></td>
+                                    <td><%= jugador.nombre %></td>
+                                    <td><%= jugador.puntajeAcumulado %></td>
+                                </tr>
+
+                            <% }); %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <a href="/" class="btn btn-primary">
+                    Volver al inicio
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>
