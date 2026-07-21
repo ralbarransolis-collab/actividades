@@ -1,0 +1,19 @@
+body {
+    min-height: 100vh;
+    background-color: rgb(204, 217, 230);
+}
+
+header {
+    border-bottom: 4px solid;
+    background: rgb(7, 58, 110);
+}
+
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.encabezado {
+    --bs-table-bg: rgb(7, 58, 110);
+    --bs-table-color: white;
+}

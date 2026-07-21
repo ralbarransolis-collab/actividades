@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Editar proveedor</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+
+<body>
+
+    <header class=" text-white py-4">
+        <div class="container">
+
+            <h1 class="h3 mb-1">
+                Modificar proveedor
+            </h1>
+
+            <p class="text-white-50 mb-0">
+                Modificación de los datos de un proveedor
+            </p>
+
+        </div>
+    </header>
+
+    <main class="container py-5">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-8 col-lg-6">
+
+                <div class="mb-3">
+
+                    <a
+                        href="/proveedores"
+                        class="btn btn-secondary"
+                    >
+                        Volver a proveedores
+                    </a>
+
+                </div>
+
+                <div class="card border-0 shadow-sm">
+
+                    <div class="card-body p-4">
+
+                        <h2 class="h4 mb-4">
+                            Editar proveedor
+                        </h2>
+
+                        <% if (error) { %>
+
+                            <div class="alert alert-danger">
+                                <%= error %>
+                            </div>
+
+                        <% } %>
+
+                        <form
+                            action="/proveedores/actualizar/<%= proveedor.id %>"
+                            method="post"
+                        >
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="nombre"
+                                    class="form-label"
+                                >
+                                    Nombre
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="nombre"
+                                    name="nombre"
+                                    class="form-control"
+                                    value="<%= proveedor.nombre %>"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="direccion"
+                                    class="form-label"
+                                >
+                                    Dirección
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="direccion"
+                                    name="direccion"
+                                    class="form-control"
+                                    value="<%= proveedor.direccion %>"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="telefono"
+                                    class="form-label"
+                                >
+                                    Teléfono
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="telefono"
+                                    name="telefono"
+                                    class="form-control"
+                                    value="<%= proveedor.telefono %>"
+                                    placeholder="Ej: +56 9 1234 5678"
+                                    pattern="\+?[0-9 ]{9,15}"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="email"
+                                    class="form-label"
+                                >
+                                    Correo electrónico
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="form-control"
+                                    value="<%= proveedor.email %>"
+                                    placeholder="Ingrese el correo electrónico"
+                                    required
+                                >
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Guardar cambios
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>
