@@ -6,6 +6,8 @@ body {
 header {
     border-bottom: 4px solid;
     background: rgb(7, 58, 110);
+    border-top: 4px solid rgb(255, 193, 7);
+    border-bottom: 4px solid rgb(255, 193, 7);;
 }
 
 .card {
@@ -16,4 +18,7 @@ header {
 .encabezado {
     --bs-table-bg: rgb(7, 58, 110);
     --bs-table-color: white;
+}
+.navbar {
+    background: rgb(7, 58, 110);
 }
