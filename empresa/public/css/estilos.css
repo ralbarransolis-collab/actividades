@@ -22,3 +22,16 @@ header {
 .navbar {
     background: rgb(7, 58, 110);
 }
+header {
+    background-color: rgb(7, 58, 110);
+}
+
+.titulo-azul {
+    background-color: rgb(7, 58, 110) !important;
+    color: white;
+}
+
+.encabezado-tabla th {
+    background-color: rgb(7, 58, 110) !important;
+    color: white !important;
+}

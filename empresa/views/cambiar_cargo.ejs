@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cambiar cargo</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+
+<body>
+    <%- include("partials/navbar") %>
+
+    <header class="text-white py-4">
+        <div class="container">
+            <h1 class="h3 mb-1">
+                Empresa
+            </h1>
+            <p class="mb-0 text-white-50">
+                Registro del cambio de cargo
+            </p>
+        </div>
+    </header>
+
+    <main class="container py-5">
+        <div class="card shadow-sm">
+            <div class="card-header titulo-azul">
+                <h2 class="h4 mb-0">
+                    Registrar cambio de cargo
+                </h2>
+            </div>
+            <div class="card-body">
+                <% if (mensaje) { %>
+                    <div class="alert alert-<%= tipoMensaje %>">
+                        <%= mensaje %>
+                    </div>
+                <% } %>
+                <form action="/cambiar_cargo" method="POST">
+                    <div class="mb-3">
+                        <label for="empleado_id" class="form-label">
+                            Empleado
+                        </label>
+                        <select
+                            id="empleado_id"
+                            name="empleado_id"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">
+                                Seleccione un empleado
+                            </option>
+                            <% empleados.forEach(empleado => { %>
+                                <option value="<%= empleado.id %>">
+                                    <%= empleado.nombre %> — <%= empleado.cargo %>
+                                </option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cargo_nuevo" class="form-label">
+                            Nuevo cargo
+                        </label>
+                        <input
+                            type="text"
+                            id="cargo_nuevo"
+                            name="cargo_nuevo"
+                            class="form-control"
+                            placeholder="Ingrese el cargo nuevo"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Registrar cambio
+                    </button>
+                </form>
+            </div>
+        </div>
+
+            <div class="card shadow-sm mt-4">
+            <div class="card-header titulo-azul">
+                <h2 class="h4 mb-0">
+                    Historial de cambios de cargo
+                </h2>
+            </div>
+            <div class="card-body">
+                <% if (historial.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="encabezado-tabla">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Empleado</th>
+                                    <th>Cargo anterior</th>
+                                    <th>Cargo nuevo</th>
+                                    <th>Fecha del cambio</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% historial.forEach(cambio => { %>
+                                    <tr>
+                                        <td><%= cambio.id %> </td>
+                                        <td> <%= cambio.nombre %> </td>
+                                        <td><%= cambio.cargo_anterior %></td>
+                                        <td> <span class="badge bg-primary"> <%= cambio.cargo_nuevo %></span></td>
+                                        <td>
+                                            <%= new Date(
+                                                cambio.fecha_cambio
+                                            ).toLocaleDateString(
+                                                "es-CL",
+                                                {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                    timeZone: "UTC"
+                                                }
+                                            ) %>
+                                        </td>
+
+                                    </tr>
+
+                                <% }); %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                <% } else { %>
+                    <div class="alert alert-warning mb-0">
+                        No existen cambios de cargo registrados.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+</body>
+</html>

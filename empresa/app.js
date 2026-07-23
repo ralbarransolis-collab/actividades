@@ -650,10 +650,10 @@ app.post("/consulta_empleado", async (req, res) => {
     }
 });
 
-app.get('/asistencias', async (req, res)=>{
-    try{
+app.get('/asistencias', async (req, res) => {
+    try {
 
-    const consulta = {
+        const consulta = {
             text: `
                 SELECT 
                     asistencias.id,
@@ -770,6 +770,321 @@ app.post("/consulta_asistencias_con_filtro", async (req, res) => {
         });
     }
 });
+
+app.get('/registrar_asistencia', async (req, res) => {
+    try {
+        const consulta = {
+            text: `
+                    SELECT id, nombre
+                    FROM empleados
+                    ORDER BY nombre
+                `,
+            values: []
+        };
+
+        const resultado = await pool.query(consulta);
+
+        res.render('registrar_asistencia', {
+            empleados: resultado.rows,
+            mensaje: '',
+            tipoMensaje: ''
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al cargar los empleados');
+    }
+});
+
+app.post('/registrar_asistencia', async (req, res) => {
+    const empleadoId = Number(req.body.empleado_id);
+    const fecha = req.body.fecha;
+    const presente = req.body.presente === 'true';
+
+    const cambio = await pool.connect();
+
+    try {
+        await cambio.query('BEGIN');
+
+        const consultaEmpleado = {
+            text: `
+                    SELECT id
+                    FROM empleados
+                    WHERE id = $1
+                `,
+            values: [empleadoId]
+        };
+
+        const resultadoEmpleado = await cambio.query(consultaEmpleado);
+
+        if (resultadoEmpleado.rowCount === 0) {
+            throw new Error('El empleado no existe');
+        }
+
+        const insertarAsistencia = {
+            text: `
+                    INSERT INTO asistencias (
+                        empleado_id,
+                        fecha,
+                        presente
+                    )
+                    VALUES ($1, $2, $3)
+                `,
+            values: [empleadoId, fecha, presente]
+        };
+
+        await cambio.query(insertarAsistencia);
+
+        if (presente) {
+            const actualizarEmpleado = {
+                text: `
+                        UPDATE empleados
+                        SET total_asistencias = total_asistencias + 1
+                        WHERE id = $1
+                    `,
+                values: [empleadoId]
+            };
+
+            await cambio.query(actualizarEmpleado);
+        }
+
+        await cambio.query('COMMIT');
+
+        const resultadoEmpleados = await pool.query({
+            text: `
+                    SELECT id, nombre
+                    FROM empleados
+                    ORDER BY nombre
+                `,
+            values: []
+        });
+
+        res.render('registrar_asistencia', {
+            empleados: resultadoEmpleados.rows,
+            mensaje: 'Asistencia registrada correctamente.',
+            tipoMensaje: 'success'
+        });
+    } catch (error) {
+        await cambio.query('ROLLBACK');
+
+        console.error(error);
+
+        const resultadoEmpleados = await pool.query({
+            text: `
+                    SELECT id, nombre
+                    FROM empleados
+                    ORDER BY nombre
+                `,
+            values: []
+        });
+
+        res.status(400).render('registrar_asistencia', {
+            empleados: resultadoEmpleados.rows,
+            mensaje: error.message,
+            tipoMensaje: 'danger'
+        });
+    } finally {
+        cambio.release();
+    }
+});
+
+app.get("/cambiar_cargo", async (req, res) => {
+    try {
+        const consultaEmpleados = {
+            text: `
+                SELECT id, nombre, cargo
+                FROM empleados
+                ORDER BY nombre
+            `,
+            values: []
+        };
+
+        const consultaHistorial = {
+            text: `
+                SELECT
+                    historial_cargos.id,
+                    empleados.nombre,
+                    historial_cargos.cargo_anterior,
+                    historial_cargos.cargo_nuevo,
+                    historial_cargos.fecha_cambio
+                FROM historial_cargos
+                INNER JOIN empleados
+                    ON historial_cargos.empleado_id = empleados.id
+                ORDER BY
+                    historial_cargos.fecha_cambio DESC,
+                    historial_cargos.id DESC
+            `,
+            values: []
+        };
+
+        const resultadoEmpleados = await pool.query(consultaEmpleados);
+        const resultadoHistorial = await pool.query(consultaHistorial);
+
+        res.render("cambiar_cargo", {
+            empleados: resultadoEmpleados.rows,
+            historial: resultadoHistorial.rows,
+            mensaje: "",
+            tipoMensaje: ""
+        });
+
+    } catch (error) {
+        console.error(
+            "Error al cargar el cambio de cargos:",
+            error.message
+        );
+
+        res.status(500).send(
+            "Error al cargar los empleados y el historial"
+        );
+    }
+});
+
+app.post("/cambiar_cargo", async (req, res) => {
+    const empleadoId = Number(req.body.empleado_id);
+    const cargoNuevo = req.body.cargo_nuevo?.trim() || "";
+
+    const cambio = await pool.connect();
+
+    try {
+        if (!Number.isInteger(empleadoId) || empleadoId <= 0) {
+            throw new Error("Debe seleccionar un empleado");
+        }
+
+        if (cargoNuevo === "") {
+            throw new Error("Debe ingresar el nuevo cargo");
+        }
+
+        await cambio.query("BEGIN");
+
+        // Consultar el cargo actual
+        const consultaEmpleado = {
+            text: `
+                SELECT id, nombre, cargo
+                FROM empleados
+                WHERE id = $1
+            `,
+            values: [empleadoId]
+        };
+
+        const resultadoEmpleado = await cambio.query(consultaEmpleado);
+
+        if (resultadoEmpleado.rowCount === 0) {
+            throw new Error("El empleado no existe");
+        }
+
+        const cargoAnterior = resultadoEmpleado.rows[0].cargo;
+
+        // Actualizar el cargo del empleado
+        const actualizarCargo = {
+            text: `
+                UPDATE empleados
+                SET cargo = $1
+                WHERE id = $2
+            `,
+            values: [cargoNuevo, empleadoId]
+        };
+
+        await cambio.query(actualizarCargo);
+
+        // Registrar el cambio en el historial
+        const insertarHistorial = {
+            text: `
+                INSERT INTO historial_cargos (
+                    empleado_id,
+                    cargo_anterior,
+                    cargo_nuevo,
+                    fecha_cambio
+                )
+                VALUES ($1, $2, $3, CURRENT_DATE)
+            `,
+            values: [
+                empleadoId,
+                cargoAnterior,
+                cargoNuevo
+            ]
+        };
+
+        await cambio.query(insertarHistorial);
+
+        await cambio.query("COMMIT");
+
+        const resultadoEmpleados = await pool.query({
+            text: `
+                SELECT id, nombre, cargo
+                FROM empleados
+                ORDER BY nombre
+            `,
+            values: []
+        });
+
+        const resultadoHistorial = await pool.query({
+            text: `
+        SELECT
+            historial_cargos.id,
+            empleados.nombre,
+            historial_cargos.cargo_anterior,
+            historial_cargos.cargo_nuevo,
+            historial_cargos.fecha_cambio
+        FROM historial_cargos
+        INNER JOIN empleados
+            ON historial_cargos.empleado_id = empleados.id
+        ORDER BY
+            historial_cargos.fecha_cambio DESC,
+            historial_cargos.id DESC
+            `,
+            values: []
+        });
+
+        res.render("cambiar_cargo", {
+            empleados: resultadoEmpleados.rows,
+            historial: resultadoHistorial.rows,
+            mensaje: `El cargo fue cambiado de "${cargoAnterior}" a "${cargoNuevo}".`,
+            tipoMensaje: "success"
+        });
+
+    } catch (error) {
+        await cambio.query("ROLLBACK");
+
+        console.error("Error al cambiar el cargo:", error.message);
+
+        const resultadoEmpleados = await pool.query({
+            text: `
+                SELECT id, nombre, cargo
+                FROM empleados
+                ORDER BY nombre
+            `,
+            values: []
+        });
+
+        const resultadoHistorial = await pool.query({
+            text: `
+        SELECT
+            historial_cargos.id,
+            empleados.nombre,
+            historial_cargos.cargo_anterior,
+            historial_cargos.cargo_nuevo,
+            historial_cargos.fecha_cambio
+        FROM historial_cargos
+        INNER JOIN empleados
+            ON historial_cargos.empleado_id = empleados.id
+        ORDER BY
+            historial_cargos.fecha_cambio DESC,
+            historial_cargos.id DESC
+    `,
+            values: []
+        });
+
+        res.status(400).render("cambiar_cargo", {
+            empleados: resultadoEmpleados.rows,
+            historial: resultadoHistorial.rows,
+            mensaje: error.message,
+            tipoMensaje: "danger"
+        });
+
+    } finally {
+    cambio.release();
+    }
+});
+
 
 /* =====================================================
    SERVIDOR
