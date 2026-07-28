@@ -1,0 +1,8 @@
+.fondo {
+    background: rgb(209, 208, 208)
+}
+header {
+    background:rgb(67, 66, 66) ;
+    border-bottom: 4px solid rgb(101, 207, 59);
+    padding: 20px;
+}   

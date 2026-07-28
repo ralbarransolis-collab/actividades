@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Asistencias</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="fondo">
+
+    <%- include('partials/navbar') %>
+
+        <header class="text-white  text-center py-4">
+            <div class="container">
+
+                <h1 class="h2 mb-1">
+                    Nueva Empresa
+                </h1>
+
+            </div>
+        </header>
+
+        <main class="container py-5">
+            <div class="container py-5">
+
+                <h1 class="h3 mb-4">
+                    Registro de asistencias
+                </h1>
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+                        Asistencias de empleados
+                    </div>
+
+                    <div class="card-body">
+
+                        <% if (asistencias.length===0) { %>
+
+                            <div class="alert alert-info mb-0">
+                                No existen asistencias registradas.
+                            </div>
+
+                            <% } else { %>
+
+                                <div class="table-responsive">
+
+                                    <table class="table table-striped table-hover align-middle mb-0">
+
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Empleado</th>
+                                                <th>Cargo</th>
+                                                <th>Sueldo</th>
+                                                <th>Fecha</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <% asistencias.forEach(asistencia=> { %>
+
+                                                <tr>
+                                                    <td>
+                                                        <%= asistencia.id %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= asistencia.Empleado.nombre %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= asistencia.Empleado.cargo %>
+                                                    </td>
+
+                                                    <td>
+                                                        $<%= asistencia.Empleado.sueldo.toLocaleString('es-CL') %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= new Date( asistencia.fecha + 'T00:00:00'
+                                                            ).toLocaleDateString('es-CL') %>
+                                                    </td>
+
+                                                    <td>
+                                                        <% if (asistencia.presente) { %>
+
+                                                            <span class="badge bg-success">
+                                                                Presente
+                                                            </span>
+
+                                                            <% } else { %>
+
+                                                                <span class="badge bg-danger">
+                                                                    Ausente
+                                                                </span>
+
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+
+                                                <% }) %>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                                <% } %>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
