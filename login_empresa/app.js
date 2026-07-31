@@ -11,11 +11,13 @@ const Empleado = require('./models/Empleado');
 const Asistencia = require('./models/Asistencia');
 
 Empleado.hasMany(Asistencia, {
-    foreignKey: 'empleado_id'
+    foreignKey: 'empleado_id',
+    as: 'asistencia'
 });
 
 Asistencia.belongsTo(Empleado, {
-    foreignKey: 'empleado_id'
+    foreignKey: 'empleado_id',
+    as: 'empleado'
 });
 
 const app = express();
@@ -34,11 +36,16 @@ app.set('views', './views');
 // MIDDLEWARES
 // ========================================
 
+
+//permite enviar datos por json al servidor
 app.use(express.urlencoded({
     extended: true
 }));
 
 app.use(express.static('public'));
+
+//permite recibir datos por json en el servidor
+app.use(express.json());
 
 
 // ========================================
@@ -602,6 +609,7 @@ app.get('/asistencias', verificarSesion, async (req, res) => {
         const asistencias = await Asistencia.findAll({
             include: {
                 model: Empleado,
+                as: 'empleado',
                 attributes: [
                     'nombre',
                     'cargo',
@@ -625,47 +633,541 @@ app.get('/asistencias', verificarSesion, async (req, res) => {
     }
 });
 
-app.get('/resumen-empleados', async (req, res)=>{
-      try {
-        const [resumen] = await sequelize.query(`
-            SELECT
-                empleados.id,
-                empleados.nombre,
-                empleados.cargo,
-                empleados.sueldo,
-                COUNT(asistencias.id) AS total_asistencias,
-                COUNT(asistencias.id)
-                    FILTER (WHERE asistencias.presente = true)
-                    AS dias_presentes,
-                COUNT(asistencias.id)
-                    FILTER (WHERE asistencias.presente = false)
-                    AS dias_ausentes
-            FROM empleados
-            LEFT JOIN asistencias
-                ON asistencias.empleado_id = empleados.id
-            GROUP BY
-                empleados.id,
-                empleados.nombre,
-                empleados.cargo,
-                empleados.sueldo
-            ORDER BY empleados.id ASC
-        `);
+app.get('/resumen-empleados', verificarSesion, async (req, res) => {
+    try {
+        const empleados = await Empleado.findAll({
+            include: {
+                model: Asistencia,
+                as: 'asistencia',
+                attributes: ['presente']
+            },
+            order: [
+                ['id', 'ASC']
+            ]
+        });
 
         res.render('resumen-empleados', {
-            resumen
+            empleados
+        });
+    } catch (error) {
+        console.error('Error al consultar empleados:', error.message);
+        console.error('Error de PostgreSQL:', error.original?.message);
+
+        res.status(500).send(
+            'Ocurrió un error al consultar los empleados'
+        );
+    }
+});
+
+app.get('/api/v1/empleados', async (req, res) => {
+    try {
+        const empleados = await Empleado.findAll({
+            order: [
+                ['id', 'ASC']
+            ]
+        });
+
+        res.status(200).json({
+            cantidad: empleados.length,
+            datos: empleados
+        });
+    }
+    catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({
+            mensaje: "Error interno"
+
+        });
+
+    }
+});
+
+
+
+app.get('/api/v1/usuarios', async (req, res) => {
+    try {
+        const usuarios = await Usuario.findAll({
+            order: [
+                ['id', 'ASC']
+            ]
+        });
+
+        res.status(200).json({
+            cantidad: usuarios.length,
+            datos: usuarios
+        });
+    }
+    catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({
+            mensaje: "Error interno"
+
+        });
+
+    }
+});
+
+app.get('/api/v1/asistencias', async (req, res) => {
+    try {
+        const asistencias = await Asistencia.findAll({
+
+            include: {
+                model: Empleado,
+                as: 'empleado',
+                attributes: [
+                    'id',
+                    'nombre',
+                    'cargo',
+                    'sueldo'
+                ],
+                required: true
+            },
+
+            order: [
+                ['id', 'ASC']
+            ]
+        });
+
+        res.status(200).json({
+            cantidad: asistencias.length,
+            datos: asistencias
+        });
+    }
+    catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({
+            mensaje: "Error interno"
+
+        });
+
+    }
+});
+
+
+app.get('/api/v1/empleados/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const empleado = await Empleado.findByPk(id);
+
+        if (!empleado) {
+            return res.status(404).json({
+                mensaje: 'No se encontró el empleado'
+            });
+        }
+
+        return res.status(200).json({
+            datos: empleado
         });
     }
     catch (error) {
         console.log(
-            'Error al obtener el resumen:',
+            'Error al consultar el empleado:',
             error.message
         );
 
-        res.status(500).send(
-            'Ocurrió un error al consultar el resumen'
-        );
+        return res.status(500).json({
+            mensaje: 'Error interno'
+        });
     }
-})
+});
+
+app.get('/api/v1/asistencias/ausencias', async (req, res) => {
+    try {
+        const asistencias = await Asistencia.findAll({
+            where: { 
+                presente: false
+            },
+
+            include: {  
+                model: Empleado,
+                as: 'empleado',
+                attributes: [
+                    'id',
+                    'nombre',
+                
+                ],
+                required: true
+            },
+
+            order: [
+                ['id', 'ASC']
+            ]
+        });
+
+        res.status(200).json({
+            cantidad: asistencias.length,
+            datos: asistencias
+        });
+    }
+    catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({
+            mensaje: "Error interno"
+
+        });
+
+    }
+});
+
+app.get('/api/v1/asistencias/rango', async (req, res) => {
+    try {
+        const { desde, hasta } = req.query;
+
+        if (!desde || !hasta) {
+            return res.status(400).json({
+                mensaje: 'Debe indicar las fechas desde y hasta'
+            });
+        }
+
+        const asistencias = await Asistencia.findAll({
+            where: {
+                fecha: {
+                    [Op.between]: [desde, hasta]
+                }
+            },
+
+            include: {
+                model: Empleado,
+                as: 'empleado',
+                attributes: [
+                    'id',
+                    'nombre',
+                    'cargo'
+                ],
+                required: true
+            },
+
+                order: [
+                    ['empleado_id', 'ASC']
+                ]
+        });
+
+        return res.status(200).json({
+            cantidad: asistencias.length,
+            datos: asistencias
+        });
+    }
+    catch (error) {
+        console.log(
+            'Error al consultar el rango:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno'
+        });
+    }
+});
+
+app.get('/api/v1/asistencias/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const asistencia = await Asistencia.findByPk(id, {
+            include: {
+                model: Empleado,
+                as: 'empleado',
+                attributes: [
+                    'id',
+                    'nombre',
+                    'cargo',
+                    'sueldo'
+                ]
+            }
+        });
+
+        if (!asistencia) {
+            return res.status(404).json({
+                mensaje: 'No se encontró la asistencia'
+            });
+        }
+
+        return res.status(200).json({
+            datos: asistencia
+        });
+    }
+    catch (error) {
+        console.log(
+            'Error al consultar la asistencia:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno'
+        });
+    }
+});
+
+app.get('/api/v1/usuarios/correo/:correo', async (req, res) => {
+    try {
+        const correo = req.params.correo
+            .trim()
+            .toLowerCase();
+
+        const usuario = await Usuario.findOne({
+            where: {
+                correo: correo
+            },
+            attributes: [
+                'id',
+                'nombre',
+                'correo',
+                'activo'
+            ]
+        });
+
+        if (!usuario) {
+            return res.status(404).json({
+                mensaje: 'No se encontró el usuario'
+            });
+        }
+
+        return res.status(200).json({
+            datos: usuario
+        });
+    }
+    catch (error) {
+        console.log(
+            'Error al consultar el usuario:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno'
+        });
+    }
+});
+
+app.post('/api/v1/empleados', async (req, res) => {
+    try {
+        const {
+            nombre,
+            cargo,
+            sueldo,
+            total_asistencias
+        } = req.body;
+
+        if (!nombre || !cargo || sueldo === undefined) {
+            return res.status(400).json({
+                mensaje: 'Nombre, cargo y sueldo son obligatorios'
+            });
+        }
+
+        const empleado = await Empleado.create({
+            nombre,
+            cargo,
+            sueldo,
+            total_asistencias: total_asistencias || 0
+        });
+
+        res.status(201).json({
+            mensaje: 'Empleado creado correctamente',
+            datos: empleado
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: 'Error interno al crear el empleado'
+        });
+    }
+});
+
+app.post('/api/v1/usuarios', async (req, res) => {
+    try {
+        const {
+            nombre = '',
+            correo = '',
+            password = ''
+        } = req.body;
+
+        const nombreLimpio = nombre.trim();
+        const correoLimpio = correo.trim().toLowerCase();
+        const passwordLimpia = password.trim();
+
+        if (!nombreLimpio || !correoLimpio || !passwordLimpia) {
+            return res.status(400).json({
+                mensaje: 'Todos los campos son obligatorios'
+            });
+        }
+
+        if (passwordLimpia.length < 6) {
+            return res.status(400).json({
+                mensaje: 'La contraseña debe tener al menos 6 caracteres'
+            });
+        }
+
+        const usuarioExistente = await Usuario.findOne({
+            where: {
+                correo: correoLimpio
+            }
+        });
+
+        if (usuarioExistente) {
+            return res.status(409).json({
+                mensaje: 'El correo ya está registrado'
+            });
+        }
+
+        const passwordCifrada = await bcrypt.hash(
+            passwordLimpia,
+            10
+        );
+
+        const usuario = await Usuario.create({
+            nombre: nombreLimpio,
+            correo: correoLimpio,
+            password: passwordCifrada
+        });
+
+        return res.status(201).json({
+            mensaje: 'Usuario creado correctamente',
+            datos: {
+                id: usuario.id,
+                nombre: usuario.nombre,
+                correo: usuario.correo,
+                activo: usuario.activo
+            }
+        });
+    }
+    catch (error) {
+        console.error(
+            'Error al crear el usuario:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno al crear el usuario'
+        });
+    }
+});
+
+app.post('/api/v1/asistencias', async (req, res) => {
+    try {
+        const {
+            empleado_id,
+            fecha,
+            presente
+        } = req.body;
+
+        if (empleado_id === undefined || !fecha || presente === undefined ) {
+            return res.status(400).json({
+                mensaje: 'empleado_id, fecha y presente son obligatorios'
+            });
+        }
+
+        const empleado = await Empleado.findByPk(empleado_id);
+
+        if (!empleado) {
+            return res.status(404).json({
+                mensaje: 'No se encontró el empleado'
+            });
+        }
+
+        const asistencia = await Asistencia.create({
+            empleado_id,
+            fecha,
+            presente
+        });
+
+        return res.status(201).json({
+            mensaje: 'Asistencia creada correctamente',
+            datos: {
+                id: asistencia.id,
+                empleado_id: asistencia.empleado_id,
+                empleado: empleado.nombre,
+                fecha: asistencia.fecha,
+                presente: asistencia.presente
+            }
+        });
+    }
+    catch (error) {
+        console.log(
+            'Error al crear la asistencia:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno al crear la asistencia'
+        });
+    }
+});
+
+app.post('/api/v1/asistencias/sin-duplicar', async (req, res) => {
+    try {
+        const {
+            empleado_id,
+            fecha,
+            presente
+        } = req.body;
+
+        if (
+            empleado_id === undefined ||
+            !fecha ||
+            presente === undefined
+        ) {
+            return res.status(400).json({
+                mensaje: 'empleado_id, fecha y presente son obligatorios'
+            });
+        }
+
+        if (typeof presente !== 'boolean') {
+            return res.status(400).json({
+                mensaje: 'El campo presente debe ser true o false'
+            });
+        }
+
+        const empleado = await Empleado.findByPk(empleado_id);
+
+        if (!empleado) {
+            return res.status(404).json({
+                mensaje: 'No se encontró el empleado'
+            });
+        }
+
+        const asistenciaExistente = await Asistencia.findOne({
+            where: {
+                empleado_id: empleado_id,
+                fecha: fecha
+            }
+        });
+
+        if (asistenciaExistente) {
+            return res.status(409).json({
+                mensaje:
+                    'El empleado ya tiene una asistencia registrada en esa fecha'
+            });
+        }
+
+        const asistencia = await Asistencia.create({
+            empleado_id,
+            fecha,
+            presente
+        });
+
+        return res.status(201).json({
+            mensaje: 'Asistencia creada correctamente',
+            datos: {
+                id: asistencia.id,
+                empleado_id: asistencia.empleado_id,
+                empleado: empleado.nombre,
+                fecha: asistencia.fecha,
+                presente: asistencia.presente
+            }
+        });
+    }
+    catch (error) {
+        console.log(
+            'Error al crear la asistencia:',
+            error.message
+        );
+
+        return res.status(500).json({
+            mensaje: 'Error interno al crear la asistencia'
+        });
+    }
+});
 
 // ========================================
 // INICIAR SERVIDOR

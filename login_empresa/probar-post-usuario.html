@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Probar POST usuario</title>
+</head>
+<body>
+
+    //archivo temporal para probar los cambios en la API
+    
+    <h1>Crear usuario</h1>
+
+    <form id="formulario">
+        <input
+            type="text"
+            id="nombre"
+            placeholder="Nombre"
+            required
+        >
+
+        <input
+            type="email"
+            id="correo"
+            placeholder="Correo"
+            required
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            minlength="6"
+            required
+        >
+
+        <button type="submit">
+            Crear
+        </button>
+    </form>
+
+    <pre id="resultado"></pre>
+
+    <script>
+        const formulario = document.getElementById('formulario');
+        const resultado = document.getElementById('resultado');
+
+        formulario.addEventListener('submit', async (evento) => {
+            evento.preventDefault();
+
+            const respuesta = await fetch(
+                'http://localhost:3000/api/v1/usuarios',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: document.getElementById('nombre').value,
+                        correo: document.getElementById('correo').value,
+                        password: document.getElementById('password').value
+                        
+                    })
+                }
+            );
+
+            const datos = await respuesta.json();
+
+            resultado.textContent = JSON.stringify(
+                datos,
+                null,
+                2
+            );
+        });
+    </script>
+
+</body>
+</html>

@@ -21,10 +21,7 @@ const Empleado = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        total_asistencias: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        }
+    
     },
     {
         tableName: 'empleados',

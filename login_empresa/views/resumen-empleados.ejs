@@ -42,7 +42,7 @@
 
                     <div class="card-body">
 
-                        <% if (resumen.length===0) { %>
+                        <% if (empleados.length===0) { %>
 
                             <div class="alert alert-info mb-0">
                                 No existen empleados registradas.
@@ -68,7 +68,7 @@
 
                                         <tbody>
 
-                                            <% resumen.forEach(empleado => { %>
+                                            <% empleados.forEach(empleado=> { %>
 
                                                 <tr>
                                                     <td>
@@ -88,15 +88,19 @@
                                                     </td>
 
                                                     <td>
-                                                        <%= empleado.total_asistencias %>
+                                                        <%= empleado.asistencia.length %>
                                                     </td>
 
                                                     <td>
-                                                        <%= empleado.dias_presentes %>
+                                                        <%= empleado.asistencia.filter( registro=> registro.presente ===
+                                                            true
+                                                            ).length %>
                                                     </td>
 
                                                     <td>
-                                                        <%= empleado.dias_ausentes %>
+                                                        <%= empleado.asistencia.filter( registro=> registro.presente ===
+                                                            false
+                                                            ).length %>
                                                     </td>
 
                                                 </tr>

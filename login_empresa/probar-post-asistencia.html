@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es-cl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Probar POST asistencia</title>
+</head>
+
+<body>
+
+    <h1>Registrar asistencia</h1>
+
+    <form id="formularioAsistencia">
+
+        <label for="empleado_id">
+            Empleado
+        </label>
+
+        <select id="empleado_id" required>
+            <option value="">
+                Cargando empleados...
+            </option>
+        </select>
+
+        <br><br>
+
+        <label for="fecha">
+            Fecha
+        </label>
+
+        <input type="date" id="fecha" lang="es-CL" required>
+
+        <br><br>
+
+        <label for="presente">
+            Estado
+        </label>
+
+        <select id="presente" required>
+            <option value="">
+                Seleccione una opción
+            </option>
+
+            <option value="true">
+                Presente
+            </option>
+
+            <option value="false">
+                Ausente
+            </option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Registrar asistencia
+        </button>
+
+    </form>
+
+    <pre id="resultado"></pre>
+
+    <script>
+        const formulario = document.getElementById('formularioAsistencia');
+
+        const selectEmpleado = document.getElementById('empleado_id');
+
+        const resultado = document.getElementById('resultado');
+
+        async function cargarEmpleados() {
+            try {
+                const respuesta = await fetch('http://localhost:3000/api/v1/empleados'
+                );
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        datos.mensaje ||
+                        'No se pudieron cargar los empleados'
+                    );
+                }
+
+                selectEmpleado.innerHTML = `
+                    <option value="">
+                        Seleccione un empleado
+                    </option>
+                `;
+
+                datos.datos.forEach(empleado => {
+                    const opcion =
+                        document.createElement('option');
+
+                    opcion.value = empleado.id;
+
+                    opcion.textContent =
+                        `${empleado.nombre} - ${empleado.cargo}`;
+
+                    selectEmpleado.appendChild(opcion);
+                });
+            }
+            catch (error) {
+                resultado.textContent =
+                    'Error al cargar empleados: ' +
+                    error.message;
+            }
+        }
+
+
+        formulario.addEventListener(
+            'submit',
+            async (evento) => {
+                evento.preventDefault();
+
+                const empleadoId = Number(
+                    selectEmpleado.value
+                );
+
+                const fecha =
+                    document.getElementById('fecha').value;
+
+                const valorPresente =
+                    document.getElementById('presente').value;
+
+                if (!empleadoId || !fecha || valorPresente === '') {
+                    resultado.textContent =
+                        'Todos los campos son obligatorios';
+
+                    return;
+                }
+
+                const presente =
+                    valorPresente === 'true';
+
+                try {
+                    const respuesta = await fetch(
+                        'http://localhost:3000/api/v1/asistencias',
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type':
+                                    'application/json'
+                            },
+
+                            body: JSON.stringify({
+                                empleado_id: empleadoId,
+                                fecha: fecha,
+                                presente: presente
+                            })
+                        }
+                    );
+
+                    const datos = await respuesta.json();
+
+                    resultado.textContent = JSON.stringify(
+                        datos,
+                        null,
+                        2
+                    );
+
+                    if (respuesta.ok) {
+                        formulario.reset();
+                    }
+                }
+                catch (error) {
+                    resultado.textContent =
+                        'Error al registrar asistencia: ' +
+                        error.message;
+                }
+            }
+        );
+
+
+        cargarEmpleados();
+    </script>
+
+</body>
+
+</html>
