@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conductores y automóviles</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
+<body class="bg-light min-vh-100">
+
+    <header class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+            <h1 class="mb-1">Conductores y automóviles</h1>
+            <p class="mb-0">Cliente web para consultar el servidor Express</p>
+        </div>
+    </header>
+
+    <main class="container pb-5">
+        <section class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h4 mb-3">Consultas generales</h2>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button id="btnConductores" class="btn btn-primary">
+                        Ver conductores
+                    </button>
+
+                    <button id="btnAutomoviles" class="btn btn-success">
+                        Ver automóviles
+                    </button>
+
+                    <button id="btnSolitos" class="btn btn-warning">
+                        Ver registros sin relación
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="row g-4 mb-4">
+            <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Conductores sin automóvil</h2>
+
+                        <form id="formEdad">
+                            <label for="edad" class="form-label">
+                                Menores de esta edad
+                            </label>
+
+                            <input
+                                type="number"
+                                id="edad"
+                                class="form-control mb-3"
+                                min="1"
+                                required
+                            >
+
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Buscar por patente</h2>
+
+                        <form id="formPatente">
+                            <label for="patente" class="form-label">
+                                Patente completa
+                            </label>
+
+                            <input
+                                type="text"
+                                id="patente"
+                                class="form-control mb-3"
+                                placeholder="Ejemplo: HXJH55"
+                                required
+                            >
+
+                            <button type="submit" class="btn btn-outline-success w-100">
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Buscar por letra inicial</h2>
+
+                        <form id="formInicioPatente">
+                            <label for="inicioPatente" class="form-label">
+                                Primera letra de la patente
+                            </label>
+
+                            <input
+                                type="text"
+                                id="inicioPatente"
+                                class="form-control mb-3"
+                                maxlength="1"
+                                placeholder="Ejemplo: H"
+                                required
+                            >
+
+                            <button type="submit" class="btn btn-outline-dark w-100">
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 id="tituloResultado" class="h4 mb-0">Resultados</h2>
+                    <span id="estado" class="badge text-bg-secondary">Sin consulta</span>
+                </div>
+
+                <div id="resultado" class="table-responsive">
+                    <p class="text-secondary mb-0">
+                        Selecciona una consulta para mostrar la información.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="frontend.js"></script>
+</body>
+</html>
