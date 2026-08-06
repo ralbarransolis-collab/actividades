@@ -1,0 +1,13 @@
+{
+  "name": "actividad7-netflix-express",
+  "version": "1.0.0",
+  "description": "Actividad 7: catálogo de películas y series con Node.js, Express y archivos TXT",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

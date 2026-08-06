@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Netflix</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="encabezado">
+        <div class="contenedor">
+            <p class="marca">NETFLIX</p>
+            <h1>Catálogo de películas y series</h1>
+            <p>Cliente web conectado a una API REST desarrollada con Node.js y Express.</p>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="panel controles-principales">
+            <h2>Consultar catálogo</h2>
+
+            <div class="grupo-botones">
+                <button type="button" id="btnPeliculas">LISTA DE PELÍCULAS</button>
+                <button type="button" id="btnSeries">LISTA DE SERIES</button>
+            </div>
+
+            <div class="ordenamiento">
+                <label for="ordenarPor">Ordenar por:</label>
+                <select id="ordenarPor" disabled>
+                    <option value="nombre">Nombre</option>
+                    <option value="anio">Año</option>
+                </select>
+
+                <select id="direccionOrden" disabled>
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+            </div>
+        </section>
+
+        <p id="resultado" class="mensaje" aria-live="polite"></p>
+
+        <section class="panel">
+            <h2 id="tituloLista">Resultados</h2>
+            <div id="listaCatalogo" class="lista-catalogo">
+                <p class="sin-resultados">Selecciona una lista para mostrar el catálogo.</p>
+            </div>
+        </section>
+
+        <section class="formularios">
+            <form id="formPelicula" class="panel formulario">
+                <h2>Agregar película</h2>
+
+                <label for="nombrePelicula">Nombre</label>
+                <input type="text" id="nombrePelicula" required>
+
+                <label for="directorPelicula">Director</label>
+                <input type="text" id="directorPelicula" required>
+
+                <label for="anioPelicula">Año de estreno</label>
+                <input type="number" id="anioPelicula" min="1888" max="2100" required>
+
+                <button type="submit">AGREGAR NUEVA PELÍCULA</button>
+            </form>
+
+            <form id="formSerie" class="panel formulario">
+                <h2>Agregar serie</h2>
+
+                <label for="nombreSerie">Nombre</label>
+                <input type="text" id="nombreSerie" required>
+
+                <label for="anioSerie">Año de estreno</label>
+                <input type="number" id="anioSerie" min="1940" max="2100" required>
+
+                <label for="temporadasSerie">Número de temporadas</label>
+                <input type="number" id="temporadasSerie" min="1" required>
+
+                <button type="submit">AGREGAR NUEVA SERIE</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
