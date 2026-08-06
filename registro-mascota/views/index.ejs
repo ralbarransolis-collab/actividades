@@ -1,0 +1,153 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<main class="container flex-grow-1 py-5">
+    <section class="mb-4">
+        <h1 class="display-6 fw-bold">Ministerio de las Mascotas</h1>
+        <p class="lead text-secondary mb-0">
+            Administración de mascotas y RUT de sus dueños.
+        </p>
+    </section>
+
+    <div id="alerta" aria-live="polite"></div>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+                <div>
+                    <h2 class="h4 mb-1">Mascotas registradas</h2>
+                    <p class="text-secondary mb-0">Consulta todos los registros o aplica un filtro.</p>
+                </div>
+                <button id="btnListarTodas" class="btn btn-primary" type="button">
+                    Listar todas
+                </button>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-lg-4">
+                    <form id="formBuscarNombre" class="input-group">
+                        <input
+                            id="buscarNombre"
+                            type="text"
+                            class="form-control"
+                            placeholder="Nombre de la mascota"
+                            required
+                        >
+                        <button class="btn btn-outline-primary" type="submit">
+                            Buscar por nombre
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formBuscarCategoria" class="input-group">
+                        <input
+                            id="buscarCategoria"
+                            type="text"
+                            class="form-control"
+                            placeholder="Categoria"
+                            required
+                        >
+                        <button class="btn btn-outline-primary" type="submit">
+                            Buscar por categoria
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formBuscarRut" class="input-group">
+                        <input
+                            id="buscarRut"
+                            type="text"
+                            class="form-control"
+                            placeholder="RUT del dueño"
+                            required
+                        >
+                        <button class="btn btn-outline-primary" type="submit">
+                            Buscar por RUT
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Mascota</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">RUT del dueño</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMascotas">
+                        <tr>
+                            <td colspan="4" class="text-center text-secondary py-4">
+                                Presiona “Listar todas” para consultar la información.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4">
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4">Registrar mascota</h2>
+                   
+                    <form id="formAgregar" class="row g-3">
+                        <div class="col-12">
+                            <label for="nombre" class="form-label">Nombre de la mascota</label>
+                            <input id="nombre" type="text" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <input id="categoria" type="text" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="rut" class="form-label">RUT del dueño</label>
+                            <input id="rut" type="text" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-success" type="submit">
+                                Registrar mascota
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4">Eliminar registros</h2>
+                    <p class="text-secondary">Elimina una mascota por nombre o todas las asociadas a un RUT.</p>
+
+                    <form id="formEliminarNombre" class="mb-4">
+                        <label for="eliminarNombre" class="form-label">Eliminar por nombre</label>
+                        <div class="input-group">
+                            <input id="eliminarNombre" type="text" class="form-control" required>
+                            <button class="btn btn-outline-danger" type="submit">Eliminar mascota</button>
+                        </div>
+                    </form>
+
+                    <form id="formEliminarRut">
+                        <label for="eliminarRut" class="form-label">Eliminar todas por RUT</label>
+                        <div class="input-group">
+                            <input id="eliminarRut" type="text" class="form-control" required>
+                            <button class="btn btn-danger" type="submit">Eliminar por RUT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/axios@1.11.0/dist/axios.min.js"></script>
+<script src="/js/app.js"></script>
+<%- include('partials/footer') %>

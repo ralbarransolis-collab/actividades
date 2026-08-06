@@ -1,0 +1,15 @@
+body {
+    min-width: 320px;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+code {
+    color: #0d6efd;
+}

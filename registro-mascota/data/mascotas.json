@@ -1,0 +1,27 @@
+[
+  {
+    "nombre": "Luna",
+    "categoria": "gato",
+    "rut": "12345678-5"
+  },
+  {
+    "nombre": "Milo",
+    "categoria": "hamster",
+    "rut": "98765432-1"
+  },
+  {
+    "nombre": "Tirifila",
+    "categoria": "gato",
+    "rut": "16584064-K"
+  },
+  {
+    "nombre": "Binky",
+    "categoria": "perro",
+    "rut": "16584064-K"
+  },
+  {
+    "nombre": "Solcito",
+    "categoria": "gato",
+    "rut": "18999777-1"
+  }
+]
