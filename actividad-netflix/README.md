@@ -1,10 +1,19 @@
-# Actividad 7 — Catálogo de películas y series
+# Actividad 8: catálogo Netflix con Express y clases
 
-Proyecto desarrollado con Node.js y Express. Los datos se almacenan en archivos TXT separados y se leen/escriben con `fs.promises`, de forma no bloqueante.
+Esta entrega continúa la Actividad 7 y agrega las clases `Pelicula` y `Serie` en archivos separados.
 
-## Importante
+## Requisitos implementados
 
-Esta entrega corresponde solamente a la Actividad 7. No incluye las clases `Pelicula` y `Serie` solicitadas posteriormente en la Actividad 8.
+- Node.js y Express.
+- Rutas `app.get()`, `app.post()` y `app.delete()`.
+- Respuestas JSON.
+- Archivos locales separados para películas y series.
+- Lectura y escritura no bloqueante con `fs.promises`.
+- Clase `Pelicula` en `clases/Pelicula.js`.
+- Clase `Serie` en `clases/Serie.js`.
+- Uso real de las clases al leer, crear y reescribir registros.
+- Cliente web para listar, ordenar, agregar y eliminar.
+- Respuesta 405 para métodos no permitidos.
 
 ## Instalación
 
@@ -18,74 +27,19 @@ npm install
 npm start
 ```
 
-Abrir en el navegador:
+Abrir:
 
 ```text
 http://localhost:3000
 ```
 
-## API
-
-### Listar películas
+## Rutas
 
 ```text
-GET /api/catalogo?tipo=peliculas
+GET    /api/catalogo?tipo=peliculas
+GET    /api/catalogo?tipo=series
+POST   /api/catalogo?tipo=peliculas
+POST   /api/catalogo?tipo=series
+DELETE /api/catalogo/:nombre?tipo=peliculas
+DELETE /api/catalogo/:nombre?tipo=series
 ```
-
-### Listar series
-
-```text
-GET /api/catalogo?tipo=series
-```
-
-### Agregar película
-
-```text
-POST /api/catalogo?tipo=peliculas
-Content-Type: application/json
-```
-
-```json
-{
-  "nombre": "Gladiador",
-  "director": "Ridley Scott",
-  "anio": 2000
-}
-```
-
-### Agregar serie
-
-```text
-POST /api/catalogo?tipo=series
-Content-Type: application/json
-```
-
-```json
-{
-  "nombre": "The Crown",
-  "anio": 2016,
-  "temporadas": 6
-}
-```
-
-### Eliminar película
-
-```text
-DELETE /api/catalogo/Gladiador?tipo=peliculas
-```
-
-### Eliminar serie
-
-```text
-DELETE /api/catalogo/The%20Crown?tipo=series
-```
-
-### Método no permitido
-
-Prueba, por ejemplo:
-
-```text
-PUT /api/catalogo?tipo=peliculas
-```
-
-Debe responder con estado HTTP 405.

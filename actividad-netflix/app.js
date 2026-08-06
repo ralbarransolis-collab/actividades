@@ -2,6 +2,9 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 
+const Pelicula = require('./models/Pelicula');
+const Serie = require('./models/Serie');
+
 const app = express();
 const puerto = process.env.PORT || 3000;
 
@@ -29,37 +32,27 @@ function convertirLineasAObjetos(contenido, tipo) {
         .map(linea => linea.trim())
         .filter(linea => linea !== '');
 
-    return lineas.map(linea => {
-        const campos = linea.split(',').map(campo => campo.trim());
-
-        if (tipo === 'peliculas') {
-            return {
-                nombre: campos[0],
-                director: campos[1],
-                anio: Number(campos[2])
-            };
-        }
-
-        if (tipo === 'series') {
-            return {
-                nombre: campos[0],
-                anio: Number(campos[1]),
-                temporadas: Number(campos[2])
-            };
-        }
-    });
-}
-
-function convertirObjetoALinea(registro, tipo) {
     if (tipo === 'peliculas') {
-        return `${registro.nombre}, ${registro.director}, ${registro.anio}`;
+        return lineas.map(linea => Pelicula.crearDesdeLinea(linea));
     }
 
     if (tipo === 'series') {
-        return `${registro.nombre}, ${registro.anio}, ${registro.temporadas}`;
+        return lineas.map(linea => Serie.crearDesdeLinea(linea));
     }
 
-    throw new Error('Tipo de registro no válido');
+    return [];
+}
+
+function convertirObjetoALinea(registro, tipo) {
+    if (tipo === 'peliculas' && registro instanceof Pelicula) {
+        return registro.convertirALinea();
+    }
+
+    if (tipo === 'series' && registro instanceof Serie) {
+        return registro.convertirALinea();
+    }
+
+    throw new Error('El registro no corresponde al tipo indicado.');
 }
 
 function validarRegistro(registro, tipo) {
@@ -101,6 +94,26 @@ function validarRegistro(registro, tipo) {
 
     return null;
 }
+
+function crearInstancia(registro, tipo) {
+    if (tipo === 'peliculas') {
+        return new Pelicula(
+            registro.nombre,
+            registro.director,
+            registro.anio
+        );
+    }
+
+    if (tipo === 'series') {
+        return new Serie(
+            registro.nombre,
+            registro.anio,
+            registro.temporadas
+        );
+    }
+
+    return null;
+};
 
 // GET: listar películas o series usando el parámetro ?tipo=
 app.get('/api/catalogo', async (req, res) => {
@@ -160,27 +173,15 @@ app.post('/api/catalogo', async (req, res) => {
             });
         }
 
-        let nuevoRegistro;
-
-        if (tipo === 'peliculas') {
-            nuevoRegistro = {
-                nombre: String(req.body.nombre).trim(),
-                director: String(req.body.director).trim(),
-                anio: Number(req.body.anio)
-            };
-        }
-        else {
-            nuevoRegistro = {
-                nombre: String(req.body.nombre).trim(),
-                anio: Number(req.body.anio),
-                temporadas: Number(req.body.temporadas)
-            };
-        }
-
+        const nuevoRegistro = crearInstancia(req.body, tipo);
         const nuevaLinea = convertirObjetoALinea(nuevoRegistro, tipo);
         const separador = contenido.length > 0 && !contenido.endsWith('\n') ? '\n' : '';
 
-        await fs.appendFile(rutaArchivo, `${separador}${nuevaLinea}\n`, 'utf-8');
+        await fs.appendFile(
+            rutaArchivo,
+            `${separador}${nuevaLinea}\n`,
+            'utf-8'
+        );
 
         return res.status(201).json({
             mensaje: `${tipo === 'peliculas' ? 'Película' : 'Serie'} agregada correctamente.`,
