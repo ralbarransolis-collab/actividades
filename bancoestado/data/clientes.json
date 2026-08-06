@@ -1,0 +1,43 @@
+[
+  {
+    "rut": "12345678-5",
+    "nombre": "Maríana Gómez",
+    "cuentaRut": {
+      "numero": "12345678",
+      "saldo": 185000
+    },
+    "cuentasAhorro": [
+      {
+        "numero": "AH-1001",
+        "saldo": 450000
+      },
+      {
+        "numero": "AH-1002",
+        "saldo": 125000
+      }
+    ]
+  },
+  {
+    "rut": "11222333-4",
+    "nombre": "Layla Zúñiga",
+    "cuentaRut": {
+      "numero": "11222333",
+      "saldo": 92000
+    },
+    "cuentasAhorro": []
+  },
+  {
+    "rut": "65498732-1",
+    "nombre": "Manuel Rojas",
+    "cuentaRut": {
+      "numero": "65498732",
+      "saldo": 15000
+    },
+    "cuentasAhorro": [
+      {
+        "numero": "AH-3001",
+        "saldo": 35000
+      }
+    ]
+  }
+]

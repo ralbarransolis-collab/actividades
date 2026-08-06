@@ -1,0 +1,25 @@
+body {
+    min-height: 100vh;
+}
+
+.navbar-brand {
+    letter-spacing: 0.02em;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(13, 110, 253, 0.08);
+}
+
+.card,
+.accordion {
+    border-radius: 1rem;
+}
+
+.card-header:first-child {
+    border-radius: 1rem 1rem 0 0;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}

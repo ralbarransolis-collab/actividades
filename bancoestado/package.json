@@ -1,0 +1,14 @@
+{
+  "name": "actividad11-bancoestado-ejs",
+  "version": "1.0.0",
+  "description": "Actividad de administración de clientes, Cuenta RUT y cuentas de ahorro con Node.js, Express, EJS, Bootstrap y archivo JSON.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.2.1"
+  }
+}

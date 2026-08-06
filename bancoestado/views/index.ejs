@@ -1,0 +1,285 @@
+<%- include('partials/head', { titulo }) %>
+<%- include('partials/navbar') %>
+
+<main class="container py-4 py-lg-5">
+    <section class="mb-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div>
+                <p class="text-primary fw-semibold mb-1">GESTIÓN DE CUENTAS</p>
+                <h1 class="display-6 fw-bold mb-2"><%= titulo %></h1>
+                <p class="text-secondary mb-0">
+                    Administración de clientes, Cuenta RUT y cuentas de ahorro.
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/" class="btn <%= filtro === 'todos' ? 'btn-primary' : 'btn-outline-primary' %>">
+                    Todos
+                </a>
+                <a href="/clientes/cuenta-rut" class="btn <%= filtro === 'cuenta-rut' ? 'btn-primary' : 'btn-outline-primary' %>">
+                    Con Cuenta RUT
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <% if (mensaje) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= mensaje %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    <% } %>
+
+    <section class="row g-4 mb-5">
+        <div class="col-12 col-xl-6">
+            <div class="card border-1 shadow-lg h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="h5 mb-0">Nuevo cliente + Cuenta RUT</h2>
+                </div>
+
+                <div class="card-body">
+                    <form action="/clientes/nuevo/cuenta-rut" method="POST" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="rutCuentaRut" class="form-label">RUT del cliente</label>
+                            <input type="text" class="form-control" id="rutCuentaRut" name="rut" placeholder="12345678-5" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="nombreCuentaRut" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="nombreCuentaRut" name="nombre" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="numeroCuentaRut" class="form-label">Número de Cuenta RUT</label>
+                            <input type="text" class="form-control" id="numeroCuentaRut" name="numeroCuenta" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="saldoCuentaRut" class="form-label">Saldo inicial</label>
+                            <input type="number" class="form-control" id="saldoCuentaRut" name="saldo" min="0" step="1" required>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Agregar cliente con Cuenta RUT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+            <div class="card border-1 shadow-lg h-100">
+                <div class="card-header bg-success text-white py-3">
+                    <h2 class="h5 mb-0">Nuevo cliente + Cuenta de Ahorro</h2>
+                </div>
+
+                <div class="card-body">
+                    <form action="/clientes/nuevo/cuenta-ahorro" method="POST" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="rutAhorro" class="form-label">RUT del cliente</label>
+                            <input type="text" class="form-control" id="rutAhorro" name="rut" placeholder="12345678-5" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="nombreAhorro" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="nombreAhorro" name="nombre" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="numeroAhorro" class="form-label">Número de Cuenta de Ahorro</label>
+                            <input type="text" class="form-control" id="numeroAhorro" name="numeroCuenta" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="saldoAhorro" class="form-label">Saldo inicial</label>
+                            <input type="number" class="form-control" id="saldoAhorro" name="saldo" min="0" step="1" required>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success w-100">
+                                Agregar cliente con Cuenta de Ahorro
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h3 mb-0">Clientes registrados</h2>
+            <span class="badge text-bg-secondary fs-6"><%= clientes.length %></span>
+        </div>
+
+        <% if (clientes.length === 0) { %>
+            <div class="alert alert-info">No existen clientes para el filtro seleccionado.</div>
+        <% } %>
+
+        <div class="accordion shadow-lg" id="listaClientes">
+            <% clientes.forEach((cliente, indice) => { %>
+                <div class="accordion-item">
+                    <h3 class="accordion-header" id="encabezado-<%= indice %>">
+                        <button
+                            class="accordion-button <%= indice === 0 ? '' : 'collapsed' %>"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#cliente-<%= indice %>"
+                            aria-expanded="<%= indice === 0 ? 'true' : 'false' %>"
+                            aria-controls="cliente-<%= indice %>"
+                        >
+                            <span class="fw-semibold"><%= cliente.nombre %></span>
+                            <span class="text-secondary ms-2">— <%= cliente.rut %></span>
+                        </button>
+                    </h3>
+
+                    <div
+                        id="cliente-<%= indice %>"
+                        class="accordion-collapse collapse <%= indice === 0 ? 'show' : '' %>"
+                        aria-labelledby="encabezado-<%= indice %>"
+                        data-bs-parent="#listaClientes"
+                    >
+                        <div class="accordion-body">
+                            <div class="row g-4">
+                                <div class="col-12 col-lg-6">
+                                    <div class="border rounded-3 p-3 h-100 bg-light-subtle">
+                                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                            <div>
+                                                <h4 class="h5 mb-1">Cuenta RUT</h4>
+                                                <p class="text-secondary small mb-0">Máximo una por cliente.</p>
+                                            </div>
+                                            <span class="badge <%= cliente.cuentaRut ? 'text-bg-primary' : 'text-bg-secondary' %>">
+                                                <%= cliente.cuentaRut ? 'Activa' : 'Sin cuenta' %>
+                                            </span>
+                                        </div>
+
+                                        <% if (cliente.cuentaRut) { %>
+                                            <dl class="row mb-3">
+                                                <dt class="col-5">Número</dt>
+                                                <dd class="col-7"><%= cliente.cuentaRut.numero %></dd>
+                                                <dt class="col-5">Saldo</dt>
+                                                <dd class="col-7 mb-0">$<%= cliente.cuentaRut.saldo.toLocaleString('es-CL') %></dd>
+                                            </dl>
+
+                                            <form
+                                                action="/clientes/<%= encodeURIComponent(cliente.rut) %>/cuenta-rut/eliminar"
+                                                method="POST"
+                                                data-confirmar="¿Eliminar la Cuenta RUT de <%= cliente.nombre %>?"
+                                            >
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    Eliminar Cuenta RUT
+                                                </button>
+                                            </form>
+                                        <% } else { %>
+                                            <form action="/clientes/<%= encodeURIComponent(cliente.rut) %>/cuenta-rut" method="POST" class="row g-2">
+                                                <div class="col-12">
+                                                    <label class="form-label small">Número de cuenta</label>
+                                                    <input type="text" class="form-control form-control-sm" name="numeroCuenta" required>
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label small">Saldo inicial</label>
+                                                    <input type="number" class="form-control form-control-sm" name="saldo" min="0" step="1" required>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                                                        Agregar Cuenta RUT
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-lg-6">
+                                    <div class="border rounded-3 p-3 h-100 bg-light-subtle">
+                                        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                                            <div>
+                                                <h4 class="h5 mb-1">Cuentas de Ahorro</h4>
+                                                <p class="text-secondary small mb-0">Puede registrar varias.</p>
+                                            </div>
+                                            <span class="badge text-bg-success"><%= cliente.cuentasAhorro.length %></span>
+                                        </div>
+
+                                        <% if (cliente.cuentasAhorro.length > 0) { %>
+                                            <div class="table-responsive mb-3">
+                                                <table class="table table-sm align-middle mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Número</th>
+                                                            <th>Saldo</th>
+                                                            <th class="text-end">Acción</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% cliente.cuentasAhorro.forEach(cuenta => { %>
+                                                            <tr>
+                                                                <td><%= cuenta.numero %></td>
+                                                                <td>$<%= cuenta.saldo.toLocaleString('es-CL') %></td>
+                                                                <td class="text-end">
+                                                                    <form
+                                                                        action="/clientes/<%= encodeURIComponent(cliente.rut) %>/cuentas-ahorro/<%= encodeURIComponent(cuenta.numero) %>/eliminar"
+                                                                        method="POST"
+                                                                        data-confirmar="¿Eliminar la Cuenta de Ahorro <%= cuenta.numero %>?"
+                                                                    >
+                                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                            Eliminar
+                                                                        </button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        <% } else { %>
+                                            <p class="text-secondary">El cliente no tiene cuentas de ahorro.</p>
+                                        <% } %>
+
+                                        <form action="/clientes/<%= encodeURIComponent(cliente.rut) %>/cuentas-ahorro" method="POST" class="row g-2 border-top pt-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Número de cuenta</label>
+                                                <input type="text" class="form-control form-control-sm" name="numeroCuenta" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label small">Saldo inicial</label>
+                                                <input type="number" class="form-control form-control-sm" name="saldo" min="0" step="1" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                                    Agregar Cuenta de Ahorro
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="border-top mt-4 pt-3 d-flex justify-content-end">
+                                <form
+                                    action="/clientes/<%= encodeURIComponent(cliente.rut) %>/eliminar"
+                                    method="POST"
+                                    data-confirmar="¿Eliminar a <%= cliente.nombre %> y todas sus cuentas? Esta acción no se puede deshacer."
+                                >
+                                    <button type="submit" class="btn btn-danger">
+                                        Eliminar cliente y todas sus cuentas
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </section>
+</main>
+
+<%- include('partials/footer') %>
