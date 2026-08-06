@@ -1,0 +1,41 @@
+<%- include('partials/head', { titulo }) %>
+<%- include('partials/navbar') %>
+
+<main class="container flex-grow-1 py-5">
+    <section class="p-4 p-md-5 bg-white rounded-4 shadow-sm border">
+        <span class="badge text-bg-primary mb-3">Reto práctico</span>
+        <h1 class="display-6 fw-bold">Administración de cartones</h1>
+        <p class="lead text-secondary mb-4">
+            El servicio genera cartones de 15 números únicos entre 1 y 30,
+            cada uno identificado con un número de serie irrepetible.
+        </p>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 border-primary-subtle">
+                    <div class="card-body p-4">
+                        <h2 class="h4">Listado de cartones</h2>
+                        <p class="text-secondary">
+                            Consulta todos los cartones creados desde que se inició el servidor.
+                        </p>
+                        <a class="btn btn-primary" href="/cartones">Ver cartones</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 border-success-subtle">
+                    <div class="card-body p-4">
+                        <h2 class="h4">Crear nuevo cartón</h2>
+                        <p class="text-secondary">
+                            Envía una petición POST al servicio para generar un nuevo cartón.
+                        </p>
+                        <a class="btn btn-success" href="/cartones/nuevo">Crear cartón</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<%- include('partials/footer') %>

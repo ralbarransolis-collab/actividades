@@ -1,0 +1,29 @@
+body {
+    min-height: 100vh;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.carton {
+    overflow: hidden;
+}
+
+.carton-destacado {
+    max-width: 360px;
+}
+
+.tabla-carton td {
+    width: 33.333%;
+    padding: 0.75rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    background-color: #f8f9fa;
+}
+
+@media (max-width: 576px) {
+    .tabla-carton td {
+        padding: 0.55rem;
+    }
+}
