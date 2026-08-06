@@ -1,0 +1,33 @@
+<section class="presentacion">
+    <p class="etiqueta">Tienda en línea</p>
+    <h1>{{mayusculas nombreTienda}}</h1>
+    <p>{{mensajeBienvenida}}</p>
+    <a class="boton" href="#productos">Ver productos</a>
+</section>
+
+<section id="productos" class="seccion-productos">
+    <div class="titulo-seccion">
+        <p class="etiqueta">Catálogo</p>
+        <h2>Nuestros productos</h2>
+    </div>
+
+    <div class="grilla-productos">
+        {{#each productos}}
+            <article class="tarjeta-producto">
+                <img src="{{imagen}}" alt="{{nombre}}">
+
+                <div class="datos-producto">
+                    <h3>{{nombre}}</h3>
+                    <p>{{material}}</p>
+                    <p class="precio">$ {{precio}}</p>
+
+                    {{#if disponible}}
+                        <p class="estado disponible">En stock</p>
+                    {{else}}
+                        <p class="estado agotado">Agotado</p>
+                    {{/if}}
+                </div>
+            </article>
+        {{/each}}
+    </div>
+</section>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520">
+  <rect width="800" height="520" fill="#e7f2ff"/>
+  <circle cx="400" cy="220" r="135" fill="#ffffff" opacity="0.85"/>
+  <text x="400" y="265" text-anchor="middle" font-size="125">🧢</text>
+  <text x="400" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#17212b">Gorra</text>
+</svg>

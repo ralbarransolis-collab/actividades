@@ -1,0 +1,22 @@
+{
+  "name": "minishop-handlebars",
+  "version": "1.0.0",
+  "description": "Aplicación web MiniShop creada con Node.js, Express y Handlebars.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "handlebars",
+    "minishop"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-handlebars": "^8.0.7"
+  }
+}
