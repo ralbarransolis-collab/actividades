@@ -41,6 +41,7 @@ Content-Type: application/json
 ```json
 {
   "nombre": "Toby",
+  "categoria": "pez dorado",
   "rut": "12345678-5"
 }
 ```
