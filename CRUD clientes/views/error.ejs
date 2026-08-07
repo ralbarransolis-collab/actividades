@@ -1,0 +1,15 @@
+<%- include("partials/head", { titulo }) %>
+<%- include("partials/navbar") %>
+
+<main class="container flex-grow-1 py-5 text-center">
+    <div class="card border-0 shadow-sm mx-auto error-card">
+        <div class="card-body p-5">
+            <p class="display-1 fw-bold text-primary mb-2"><%= codigo %></p>
+            <h1 class="h3"><%= titulo %></h1>
+            <p class="text-secondary"><%= mensaje %></p>
+            <a href="/" class="btn btn-primary">Volver al inicio</a>
+        </div>
+    </div>
+</main>
+
+<%- include("partials/footer") %>

@@ -1,0 +1,19 @@
+body {
+    background-color: #dbdce3;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+}
+
+.error-card {
+    max-width: 540px;
+}
+.navbar {
+    border-bottom: 3px solid #0e0e0e;
+}

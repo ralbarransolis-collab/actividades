@@ -1,0 +1,16 @@
+{
+  "name": "actividad-crud-clientes-pg",
+  "version": "1.0.0",
+  "description": "CRUD de clientes con Node.js, Express, pg, EJS y consultas parametrizadas",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "pg": "^8.22.0"
+  }
+}
