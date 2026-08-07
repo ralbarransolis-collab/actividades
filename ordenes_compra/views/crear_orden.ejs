@@ -1,0 +1,365 @@
+<%- include("partials/head", {
+    titulo: "Crear orden"
+}) %>
+
+<%- include("partials/header") %>
+<div class="container mt-4">
+    <a
+        href="/"
+        class="btn btn-secondary mb-3"
+    >
+        Volver
+    </a>
+    <h1>
+        Crear nueva orden
+    </h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>
+                1. Seleccionar cliente
+            </h4>
+            <div class="mb-3">
+                <label
+                    for="rut"
+                    class="form-label"
+                >
+                    RUT
+                </label>
+                <input
+                    type="text"
+                    id="rut"
+                    class="form-control"
+                    placeholder="11111111-1"
+                >
+            </div>
+            <button
+                id="btnBuscar"
+                type="button"
+                class="btn btn-primary"
+            >
+                Buscar cliente
+            </button>
+            <div
+                id="cliente"
+                class="mt-3"
+            >
+            </div>
+        </div>
+    </div>
+    <form id="formOrden">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>
+                    2. Dirección de despacho
+                </h4>
+                <select
+                    id="direccion"
+                    class="form-select"
+                    required
+                >
+                    <option value="">
+                        Primero busque un cliente
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>
+                    3. Productos
+                </h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Producto
+                            </th>
+                            <th>
+                                Precio
+                            </th>
+                            <th>
+                                Stock
+                            </th>
+                            <th>
+                                Cantidad
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% productos.forEach(producto => { %>
+                            <tr>
+                                <td>
+                                    <%= producto.nombre %>
+                                </td>
+                                <td>
+                                    $<%= Number(producto.precio).toLocaleString("es-CL") %>
+                                </td>
+                                <td
+                                    id="stock-<%= producto.id_producto %>"
+                                >
+                                    <%= producto.existencias %>
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        class="form-control cantidad"
+                                        data-id="<%= producto.id_producto %>"
+                                        min="0"
+                                        value="0"
+                                    >
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button
+            type="submit"
+            class="btn btn-success"
+        >
+            Crear orden
+        </button>
+    </form>
+    <div
+        id="resultado"
+        class="mt-4"
+    >
+    </div>
+</div>
+<script>
+    const rutInput =
+        document.getElementById(
+            "rut"
+        );
+    const btnBuscar =
+        document.getElementById(
+            "btnBuscar"
+        );
+    const clienteDiv =
+        document.getElementById(
+            "cliente"
+        );
+    const direccionSelect =
+        document.getElementById(
+            "direccion"
+        );
+    const formOrden =
+        document.getElementById(
+            "formOrden"
+        );
+    const resultado =
+        document.getElementById(
+            "resultado"
+        );
+    let rutCliente = "";
+    btnBuscar.addEventListener(
+        "click",
+        async () => {
+            const rut =
+                rutInput.value.trim();
+            if (!rut) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Debe ingresar un RUT.
+                    </div>
+                `;
+                return;
+            }
+            try {
+                const respuestaCliente =
+                    await fetch(
+
+                        `/?filtro=clientes&rut=${encodeURIComponent(rut)}`
+                    );
+                const datosCliente =
+                    await respuestaCliente.json();
+                if (
+                    !respuestaCliente.ok
+                ) {
+                    rutCliente = "";
+                    clienteDiv.innerHTML = "";
+                    direccionSelect.innerHTML = `
+                        <option value="">
+                            Cliente no encontrado
+                        </option>
+                    `;
+                    resultado.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${datosCliente.mensaje}
+                        </div>
+                    `;
+                    return;
+                }
+                rutCliente =
+                    datosCliente.cliente.rut;
+                    clienteDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        Cliente:
+                        <strong>
+                            ${datosCliente.cliente.nombre}
+                        </strong>
+                        <br>
+                        RUT:
+                        ${datosCliente.cliente.rut}
+                    </div>
+                `;
+                resultado.innerHTML = "";
+                const respuestaDirecciones =
+                    await fetch(
+                        `/?filtro=direcciones&rut=${encodeURIComponent(rutCliente)}`
+                    );
+                const datosDirecciones =
+                    await respuestaDirecciones.json();
+                direccionSelect.innerHTML = `
+                    <option value="">
+                        Seleccione una dirección
+                    </option>
+                `;
+                datosDirecciones.direcciones.forEach(
+                    direccion => {
+                        direccionSelect.innerHTML += `
+                            <option
+                                value="${direccion.id_direccion}"
+                            >
+                                ${direccion.direccion}
+                                -
+                                ${direccion.comuna}
+                            </option>
+                        `;
+                    }
+                );
+            } catch (error) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al consultar el cliente.
+                    </div>
+                `;
+            }
+        }
+    );
+    formOrden.addEventListener(
+        "submit",
+        async (evento) => {
+            evento.preventDefault();
+            if (!rutCliente) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Primero debe buscar un cliente.
+                    </div>
+                `;
+                return;
+            }
+            const direccionId =
+                Number(
+                    direccionSelect.value
+                );
+            if (!direccionId) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Debe seleccionar una dirección.
+                    </div>
+                `;
+                return;
+            }
+            const inputs =
+                document.querySelectorAll(
+                    ".cantidad"
+                );
+            const productos = [];
+            inputs.forEach(
+                input => {
+                    const cantidad =
+                        Number(
+                            input.value
+                        );
+                    if (cantidad > 0) {
+                        productos.push({
+                            id_producto:
+                                Number(
+                                    input.dataset.id
+                                ),
+                            cantidad_producto:
+                                cantidad
+                        });
+                    }
+                }
+            );
+            if ( productos.length === 0 ) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Debe seleccionar al menos un producto.
+                    </div>
+                `;
+                return;
+            }
+            try {
+                const respuesta =
+                    await fetch("/orden", {
+                            method:
+                                "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body:
+                                JSON.stringify({
+                                    rut: rutCliente,
+                                    direccion_id: direccionId,
+                                    productos: productos
+                                })
+                        }
+                    );
+                const datos =
+                    await respuesta.json();
+                if (!respuesta.ok) {
+                    resultado.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>
+                                No se pudo crear la orden.
+                            </strong>
+                            <br>
+                            ${datos.mensaje}
+                        </div>
+                    `;
+                    return;
+                }
+                resultado.innerHTML = `
+                    <div class="alert alert-success">
+                        <strong>
+                            ${datos.mensaje}
+                        </strong>
+                        <br>
+                        Número de orden:
+                        <strong>
+                            ${datos.orden.id_orden}
+                        </strong>
+                    </div>
+                `;
+                datos.orden.productos.forEach(
+                    producto => {
+                        const celdaStock =
+                            document.getElementById(
+                                `stock-${producto.id_producto}`
+                            );
+                        if (celdaStock) {
+                            celdaStock.textContent =
+                                producto.stock_nuevo;
+                        }
+                    }
+                );
+                inputs.forEach(
+                    input => {
+                        input.value = 0;
+                    }
+                );
+            } catch (error) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error al enviar la orden.
+                    </div>
+                `;
+            }
+        }
+    );
+</script>
+<%- include("partials/footer") %>

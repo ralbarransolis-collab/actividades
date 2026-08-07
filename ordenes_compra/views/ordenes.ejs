@@ -1,0 +1,225 @@
+<%- include("partials/head", {
+    titulo: "Órdenes del cliente"
+}) %>
+
+<%- include("partials/header") %>
+
+<div class="container mt-4">
+
+    <a href="/"class="btn btn-secondary mb-3">
+        Volver
+    </a>
+
+    <h1>
+        Consultar órdenes
+    </h1>
+
+    <div class="row mt-4">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <h4>
+                        Clientes
+                    </h4>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Nombre
+                                </th>
+                                <th>
+                                    RUT
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% clientes.forEach(cliente => { %>
+                                <tr>
+                                    <td>
+                                        <%= cliente.nombre %>
+                                   </td>
+                                    <td>
+                                        <%= cliente.rut %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-body">
+                    <h4>
+                        Órdenes del cliente
+                    </h4>
+                    <form id="formulario">
+                        <div class="mb-3">
+                            <label
+                                for="rut"
+                                class="form-label"
+                            >
+                                RUT del cliente
+                            </label>
+                            <input
+                                type="text"
+                                id="rut"
+                                class="form-control"
+                                placeholder="Seleccione un cliente o ingrese el RUT"
+                                required
+                            >
+                        </div>
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                        >
+                            Buscar órdenes
+                        </button>
+                    </form>
+                    <hr>
+                    <div id="resultado">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const formulario =
+        document.getElementById(
+            "formulario"
+        );
+
+    const resultado =
+        document.getElementById(
+            "resultado"
+        );
+
+    const rutInput =
+        document.getElementById(
+            "rut"
+        );
+
+    formulario.addEventListener(
+        "submit",
+        async (evento) => {
+            evento.preventDefault();
+
+            const rut =
+                rutInput.value.trim();
+
+            consultarOrdenes(
+                rut
+            );
+        }
+    );
+
+    async function consultarOrdenes(
+        rut
+    ) {
+        try {
+            resultado.innerHTML = `
+                <div class="alert alert-info">
+                    Consultando órdenes...
+                </div>
+            `;
+            const respuesta =
+                await fetch(
+                    `/?filtro=ordenes&rut=${encodeURIComponent(rut)}`
+                );
+            const datos =
+                await respuesta.json();
+
+            if (!respuesta.ok) {
+                resultado.innerHTML = `
+                    <div class="alert alert-danger">
+                        ${datos.mensaje}
+                    </div>
+                `;
+                return;
+            }
+
+            if (
+                datos.ordenes.length === 0
+            ) {
+                resultado.innerHTML = `
+                    <div class="alert alert-warning">
+                        El cliente no tiene órdenes registradas.
+                    </div>
+                `;
+                return;
+            }
+
+            let tabla = `
+                <table
+                    class="table table-striped table-bordered"
+                >
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                Orden
+                            </th>
+                            <th>
+                                Cliente
+                            </th>
+                            <th>
+                                Fecha
+                            </th>
+                            <th>
+                                Estado
+                            </th>
+                            <th>
+                                Total
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            datos.ordenes.forEach(
+                orden => {
+                    tabla += `
+                        <tr>
+                            <td>
+                                ${orden.id_orden}
+                            </td>
+                            <td>
+                                ${orden.nombre}
+                            </td>
+                            <td>
+                                ${new Date(
+                                    orden.fecha_orden
+                                ).toLocaleString("es-CL")}
+                            </td>
+                            <td>
+                                ${orden.estado}
+                            </td>
+                            <td>
+                                $${Number(
+                                    orden.total
+                                ).toLocaleString("es-CL")}
+                            </td>
+                        </tr>
+                    `;
+                }
+            );
+            tabla += `
+                    </tbody>
+                </table>
+            `;
+            resultado.innerHTML =
+                tabla;
+        } catch (error) {
+            console.error(error);
+            resultado.innerHTML = `
+                <div class="alert alert-danger">
+                    Error al consultar las órdenes.
+                </div>
+            `;
+        }
+    }
+</script>
+
+<%- include("partials/footer") %>

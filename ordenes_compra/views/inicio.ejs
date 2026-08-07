@@ -1,0 +1,38 @@
+<%- include("partials/head", {
+    titulo: "Órdenes del cliente"
+}) %>
+
+<%- include("partials/header") %>
+    <div class="container mt-5">
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="mb-4">
+                    Sistema de órdenes de compra
+                </h1>
+                <p>
+                    Seleccione una opción:
+                </p>
+                <div class="d-grid gap-3">
+                    <a
+                        href="/productos"
+                        class="btn btn-primary"
+                    >
+                        Listar productos
+                    </a>
+                    <a
+                        href="/ordenes"
+                        class="btn btn-info"
+                    >
+                        Consultar órdenes
+                    </a>
+                    <a
+                        href="/crear-orden"
+                        class="btn btn-success"
+                    >
+                        Crear nueva orden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+<%- include("partials/footer") %>
