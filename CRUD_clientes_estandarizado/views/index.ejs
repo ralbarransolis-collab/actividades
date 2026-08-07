@@ -1,0 +1,181 @@
+<%- include("partials/head", { titulo }) %>
+<%- include("partials/navbar") %>
+
+<main class="container flex-grow-1 py-5">
+    <section class="mb-4">
+        <h1 class="display-6 fw-bold">CRUD de clientes</h1>
+        <p class="lead text-secondary mb-0">
+            Módulos para tratamiento de datos.
+        </p>
+    </section>
+
+    <div id="alerta" aria-live="polite"></div>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <div>
+                    <h2 class="h4 mb-1">Resultados</h2>
+                    <p class="text-secondary mb-0">
+                        Consulta todos los clientes o utiliza uno de los filtros.
+                    </p>
+                </div>
+                <button id="btnListar" class="btn btn-primary" type="button">
+                    Listar todos
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>RUT</th>
+                            <th>Nombre</th>
+                            <th>Edad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaClientes">
+                        <tr>
+                            <td colspan="4" class="text-center text-secondary py-4">
+                                Presiona “Listar todos” para cargar la información.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4 mb-4">
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4">Crear cliente</h2>
+                    <form id="formCrear" class="row g-3">
+                        <div class="col-12">
+                            <label for="crearRut" class="form-label">RUT</label>
+                            <input id="crearRut" class="form-control" type="text" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="crearNombre" class="form-label">Nombre</label>
+                            <input id="crearNombre" class="form-control" type="text" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="crearEdad" class="form-label">Edad</label>
+                            <input id="crearEdad" class="form-control" type="number" min="0" max="120" required>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-success" type="submit">
+                                Crear cliente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h4">Modificar nombre</h2>
+                    <form id="formModificar" class="row g-3">
+                        <div class="col-12">
+                            <label for="modificarRut" class="form-label">RUT</label>
+                            <input id="modificarRut" class="form-control" type="text" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="modificarNombre" class="form-label">Nuevo nombre</label>
+                            <input id="modificarNombre" class="form-control" type="text" required>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-warning" type="submit">
+                                Modificar nombre
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h2 class="h4 mb-3">Consultar clientes</h2>
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <form id="formConsultarRut">
+                        <label for="consultarRut" class="form-label">Por RUT</label>
+                        <div class="input-group">
+                            <input id="consultarRut" class="form-control" type="text" required>
+                            <button class="btn btn-outline-primary" type="submit">Consultar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formConsultarNombre">
+                        <label for="consultarNombre" class="form-label">Por nombre o prefijo</label>
+                        <div class="input-group">
+                            <input id="consultarNombre" class="form-control" type="text" required>
+                            <button class="btn btn-outline-primary" type="submit">Consultar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formConsultarEdad">
+                        <label for="consultarEdad" class="form-label">Por edad exacta</label>
+                        <div class="input-group">
+                            <input id="consultarEdad" class="form-control" type="number" min="0" max="120" required>
+                            <button class="btn btn-outline-primary" type="submit">Consultar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h2 class="h4 mb-3">Eliminar clientes</h2>
+            <p class="text-secondary">
+                Las eliminaciones por nombre o edad se bloquean si el criterio coincide con más de un cliente.
+            </p>
+            <div class="row g-3">
+                <div class="col-lg-4">
+                    <form id="formEliminarRut">
+                        <label for="eliminarRut" class="form-label">Por RUT</label>
+                        <div class="input-group">
+                            <input id="eliminarRut" class="form-control" type="text" required>
+                            <button class="btn btn-danger" type="submit">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formEliminarNombre">
+                        <label for="eliminarNombre" class="form-label">Por nombre o prefijo</label>
+                        <div class="input-group">
+                            <input id="eliminarNombre" class="form-control" type="text" required>
+                            <button class="btn btn-outline-danger" type="submit">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <form id="formEliminarEdad">
+                        <label for="eliminarEdad" class="form-label">Por edad exacta</label>
+                        <div class="input-group">
+                            <input id="eliminarEdad" class="form-control" type="number" min="0" max="120" required>
+                            <button class="btn btn-outline-danger" type="submit">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script src="/js/app.js"></script>
+<%- include("partials/footer") %>

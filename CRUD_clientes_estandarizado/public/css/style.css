@@ -1,0 +1,15 @@
+.navbar {
+    border-bottom: 3px solid #000000;
+}
+
+.card {
+    border-radius: 1rem;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+body {
+    background: #c7c7c7;
+}
