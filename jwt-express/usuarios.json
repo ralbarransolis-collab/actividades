@@ -1,0 +1,8 @@
+[
+  {
+    "id": 1,
+    "email": "rocio@correo.cl",
+    "passwordHash": "$2b$10$kJkDTABOQ12bS/TFycxxh.Py7rdFp3YBI0OvO/xCdkf2WrM/HUK6.",
+    "role": "user"
+  }
+]

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Express</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5" style="max-width: 850px;">
+
+        <h1 class="mb-4">Autenticación con JWT</h1>
+
+        <div id="mensaje"></div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h4">Registrar usuario</h2>
+                        <p><small class="text-secondary">Primer paso, para probar el token</small></p>
+
+                        <form id="formRegistro">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="emailRegistro" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" id="passwordRegistro" class="form-control" minlength="6"
+                                    required>
+                            </div>
+
+                            <button class="btn btn-success">Registrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h4">Iniciar sesión</h2>
+                        <p><small class="text-secondary">Segundo paso, probar el token</small></p>
+                        <form id="formLogin">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="emailLogin" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" id="passwordLogin" class="form-control" required>
+                            </div>
+
+                            <button class="btn btn-primary">Ingresar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h2 class="h4">Ruta protegida</h2>
+
+                <button id="btnPerfil" class="btn btn-dark">
+                    Consultar perfil
+                </button>
+
+                <button id="btnLogout" class="btn btn-danger">
+                    Eliminar token
+                </button>
+
+                <pre id="perfil" class="bg-light border rounded p-3 mt-3"></pre>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const mensaje = document.getElementById("mensaje");
+        const perfil = document.getElementById("perfil");
+        const formRegistro = document.getElementById("formRegistro");
+        const formLogin = document.getElementById("formLogin");
+        const btnPerfil = document.getElementById("btnPerfil");
+        const btnLogout = document.getElementById("btnLogout");
+
+        function mostrarMensaje(texto, tipo = "success") {
+            mensaje.innerHTML = `<div class="alert alert-${tipo}">${texto}</div>`;
+        }
+
+        formRegistro.addEventListener("submit", async (evento) => {
+            evento.preventDefault();
+
+            const body = {
+                email: document.getElementById("emailRegistro").value.trim(),
+                password: document.getElementById("passwordRegistro").value
+            };
+
+            try {
+                const respuesta = await fetch("/auth/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    mostrarMensaje(datos.mensaje, "danger");
+                    return;
+                }
+
+                mostrarMensaje(datos.mensaje);
+                formRegistro.reset();
+
+            } catch (error) {
+                mostrarMensaje("Error al registrar usuario", "danger");
+            }
+        });
+
+        formLogin.addEventListener("submit", async (evento) => {
+            evento.preventDefault();
+
+            const body = {
+                email: document.getElementById("emailLogin").value.trim(),
+                password: document.getElementById("passwordLogin").value
+            };
+
+            try {
+                const respuesta = await fetch("/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    mostrarMensaje(datos.mensaje, "danger");
+                    return;
+                }
+
+                localStorage.setItem("token", datos.token);
+
+                mostrarMensaje("Login correcto. Token guardado.");
+                formLogin.reset();
+
+            } catch (error) {
+                mostrarMensaje("Error al iniciar sesión", "danger");
+            }
+        });
+
+        btnPerfil.addEventListener("click", async () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                mostrarMensaje("Primero debe iniciar sesión", "warning");
+                return;
+            }
+
+            try {
+                const respuesta = await fetch("/api/perfil", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    mostrarMensaje(datos.mensaje, "danger");
+                    perfil.textContent = "";
+                    return;
+                }
+
+                perfil.textContent = JSON.stringify(datos.data, null, 2);
+
+            } catch (error) {
+                mostrarMensaje("Error al consultar el perfil", "danger");
+            }
+        });
+
+
+        btnLogout.addEventListener("click", () => {
+            localStorage.removeItem("token");
+            perfil.textContent = "";
+            mostrarMensaje("Token eliminado");
+        });
+    </script>
+
+</body>
+
+</html>
