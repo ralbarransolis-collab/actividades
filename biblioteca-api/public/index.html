@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca - CRUD REST</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div class="container py-4">
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h3">Biblioteca - CRUD REST</h1>
+    
+        </div>
+    </div>
+
+    <div id="mensaje"></div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="h4 mb-0">Libros</h2>
+                </div>
+                <button id="btnNuevo" class="btn btn-primary">Nuevo libro</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Año</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaLibros"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="contenedorFormulario" class="card shadow-sm d-none">
+        <div class="card-body">
+            <h2 id="tituloFormulario" class="h4">Nuevo libro</h2>
+            <p id="rutaFormulario" class="text-secondary">POST /libros</p>
+
+            <form id="formLibro">
+                <input type="hidden" id="idLibro">
+
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" id="titulo" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="autor" class="form-label">Autor</label>
+                    <input type="text" id="autor" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="anio" class="form-label">Año</label>
+                    <input type="number" id="anio" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <button type="button" id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const tablaLibros = document.getElementById("tablaLibros");
+const mensaje = document.getElementById("mensaje");
+const formLibro = document.getElementById("formLibro");
+const contenedorFormulario = document.getElementById("contenedorFormulario");
+const idLibro = document.getElementById("idLibro");
+const titulo = document.getElementById("titulo");
+const autor = document.getElementById("autor");
+const anio = document.getElementById("anio");
+const btnNuevo = document.getElementById("btnNuevo");
+const btnCancelar = document.getElementById("btnCancelar");
+const tituloFormulario = document.getElementById("tituloFormulario");
+const rutaFormulario = document.getElementById("rutaFormulario");
+
+function mostrarMensaje(texto, tipo = "success") {
+    mensaje.innerHTML = `<div class="alert alert-${tipo}">${texto}</div>`;
+}
+
+async function cargarLibros() {
+    try {
+        const respuesta = await fetch("/libros");
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mostrarMensaje(datos.mensaje, "danger");
+            return;
+        }
+
+        tablaLibros.innerHTML = "";
+
+        datos.data.forEach(libro => {
+            tablaLibros.innerHTML += `
+                <tr>
+                    <td>${libro.id}</td>
+                    <td>${libro.titulo}</td>
+                    <td>${libro.autor}</td>
+                    <td>${libro.anio}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm"
+                            onclick="editarLibro(${libro.id})">
+                            Editar
+                        </button>
+
+                        <button class="btn btn-danger btn-sm"
+                            onclick="eliminarLibro(${libro.id})">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+    } catch (error) {
+        mostrarMensaje("Error al cargar los libros", "danger");
+    }
+}
+
+btnNuevo.addEventListener("click", () => {
+    formLibro.reset();
+    idLibro.value = "";
+    tituloFormulario.textContent = "Nuevo libro";
+    rutaFormulario.textContent = "POST /libros";
+    contenedorFormulario.classList.remove("d-none");
+});
+
+btnCancelar.addEventListener("click", () => {
+    formLibro.reset();
+    contenedorFormulario.classList.add("d-none");
+});
+
+formLibro.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+
+    const libro = {
+        titulo: titulo.value.trim(),
+        autor: autor.value.trim(),
+        anio: Number(anio.value)
+    };
+
+    const id = idLibro.value;
+    const url = id ? `/libros/${id}` : "/libros";
+    const metodo = id ? "PUT" : "POST";
+
+    try {
+        const respuesta = await fetch(url, {
+            method: metodo,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(libro)
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mostrarMensaje(datos.mensaje, "danger");
+            return;
+        }
+
+        mostrarMensaje(
+            metodo === "POST"
+                ? "Libro creado correctamente"
+                : "Libro actualizado correctamente"
+        );
+
+        formLibro.reset();
+        contenedorFormulario.classList.add("d-none");
+        cargarLibros();
+
+    } catch (error) {
+        mostrarMensaje("Error al guardar el libro", "danger");
+    }
+});
+
+async function editarLibro(id) {
+    try {
+        const respuesta = await fetch("/libros");
+        const datos = await respuesta.json();
+        const libro = datos.data.find(libro => libro.id === id);
+
+        if (!libro) {
+            mostrarMensaje("Libro no encontrado", "danger");
+            return;
+        }
+
+        idLibro.value = libro.id;
+        titulo.value = libro.titulo;
+        autor.value = libro.autor;
+        anio.value = libro.anio;
+
+        tituloFormulario.textContent = "Editar libro";
+        rutaFormulario.textContent = `PUT /libros/${id}`;
+        contenedorFormulario.classList.remove("d-none");
+
+    } catch (error) {
+        mostrarMensaje("Error al obtener el libro", "danger");
+    }
+}
+
+async function eliminarLibro(id) {
+    if (!confirm("¿Desea eliminar este libro?")) return;
+
+    try {
+        const respuesta = await fetch(`/libros/${id}`, {
+            method: "DELETE"
+        });
+
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            mostrarMensaje(datos.mensaje, "danger");
+            return;
+        }
+
+        mostrarMensaje(`Libro "${datos.data.titulo}" eliminado correctamente`);
+        cargarLibros();
+
+    } catch (error) {
+        mostrarMensaje("Error al eliminar el libro", "danger");
+    }
+}
+
+cargarLibros();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

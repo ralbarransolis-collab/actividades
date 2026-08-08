@@ -1,0 +1,44 @@
+[
+  {
+    "id": 2,
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "anio": 1949
+  },
+  {
+    "id": 3,
+    "titulo": "Rayuela",
+    "autor": "Julio Cortázar",
+    "anio": 1963
+  },
+  {
+    "id": 4,
+    "titulo": "El Principito",
+    "autor": "Antoine de Saint-Exupéry",
+    "anio": 1943
+  },
+  {
+    "id": 5,
+    "titulo": "Don Quijote de la Mancha",
+    "autor": "Miguel de Cervantes",
+    "anio": 1605
+  },
+  {
+    "id": 6,
+    "titulo": "La metamorfosis",
+    "autor": "Franz Kafka",
+    "anio": 1915
+  },
+  {
+    "id": 7,
+    "titulo": "Fahrenheit 451",
+    "autor": "Ray Bradbury",
+    "anio": 1953
+  },
+  {
+    "id": 8,
+    "titulo": "Parque Jurásico",
+    "autor": "Michael Crichton",
+    "anio": 1990
+  }
+]
