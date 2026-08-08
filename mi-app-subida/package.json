@@ -1,0 +1,19 @@
+{
+  "name": "mi-app-subida",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "nodemon": "^3.1.14"
+  }
+}
